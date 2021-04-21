@@ -1,0 +1,162 @@
+using System.Linq;
+using UnityEditor;
+using UnityEditor.IMGUI.Controls;
+using UnityEngine;
+
+namespace Yorozu.EditorTools
+{
+    public class YorozuToolEditorWindow : EditorWindow, IHasCustomMenu
+    {
+        [MenuItem("Tools/YorozuTool")]
+        private static void ShowWindow()
+        {
+            var window = GetWindow<YorozuToolEditorWindow>("YorozuTool");
+            window.Show();
+        }
+
+        internal static YorozuToolEditorWindow Window;
+
+        internal Module CurrentModule => _modules[_moduleIndex];
+
+        [SerializeField]
+        private TreeViewState _state;
+        [SerializeReference]
+        private Module[] _modules;
+
+        private ToolTreeView _treeView;
+        private SearchField _searchField;
+        private int _moduleIndex;
+        private GUIContent[] _tabContents;
+
+        private void OnEnable()
+        {
+            Window = this;
+            Init();
+            CurrentModule.Enter();
+        }
+
+        private void OnDisable()
+        {
+            Window = null;
+        }
+
+        private void Init()
+        {
+            if (_modules == null)
+            {
+                _modules = new Module[]
+                {
+                    new ProjectModule(),
+                    new HierarchyModule(),
+                    new FavoriteModule(),
+                    new ShareModule(),
+                };
+            }
+
+            if (_state == null)
+            {
+                _state = new TreeViewState();
+            }
+            if (_treeView == null)
+            {
+                _treeView = new ToolTreeView(_state, this);
+            }
+            if (_searchField == null)
+            {
+                _searchField = new SearchField();
+                _searchField.downOrUpArrowKeyPressed += _treeView.SetFocusAndEnsureSelectedItem;
+            }
+
+            if (_tabContents == null)
+            {
+                _tabContents = new GUIContent[_modules.Length];
+                for (var i = 0; i < _modules.Length; i++)
+                {
+                    _tabContents[i] = new GUIContent(_modules[i].Name, _modules[i].Texture);
+                }
+            }
+        }
+
+        private void OnGUI()
+        {
+            Init();
+            CheckDrop();
+
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                using (var check = new EditorGUI.ChangeCheckScope())
+                {
+                    var prev = _moduleIndex;
+                    _moduleIndex = GUILayout.Toolbar(
+                        _moduleIndex,
+                        _tabContents,
+                        new GUIStyle(EditorStyles.toolbarButton),
+                        GUI.ToolbarButtonSize.Fixed);
+
+                    if (check.changed)
+                    {
+                        _modules[prev].Exit();
+                        CurrentModule.Enter();
+                        Reload();
+                    }
+                }
+            }
+
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                _treeView.searchString = _searchField.OnToolbarGUI(_treeView.searchString);
+            }
+
+            var rect = GUILayoutUtility.GetRect(0, float.MaxValue, 0, float.MaxValue);
+            _treeView.OnGUI(rect);
+        }
+
+        internal void Reload()
+        {
+            _treeView.Reload();
+            Repaint();
+        }
+
+        private void CheckDrop()
+        {
+            var @event = Event.current;
+            if (@event.type == EventType.DragUpdated || @event.type == EventType.DragPerform)
+            {
+                var paths = DragAndDrop.paths;
+
+                if (mouseOverWindow != this || paths.Length <= 0)
+                    return;
+
+                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                if (@event.type == EventType.DragPerform)
+                {
+                    DragAndDrop.activeControlID = 0;
+                    FavoriteSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
+                    DragAndDrop.AcceptDrag();
+                }
+                else
+                {
+                    DragAndDrop.activeControlID = GUIUtility.GetControlID(FocusType.Passive);
+                }
+
+                @event.Use();
+            }
+        }
+
+        void IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
+        {
+            menu.AddItem(new GUIContent("Remove Invalid Favorite Asset"), false, () =>
+            {
+                FavoriteSave.RemoveInactive();
+            });
+
+            menu.AddItem(new GUIContent("Remove All Favorite Asset"), false, () =>
+            {
+                if (EditorUtility.DisplayDialog("Info", "Clean All Favorite Asset?", "OK", "Cancel"))
+                {
+                    FavoriteSave.Clear();
+                }
+            });
+        }
+    }
+}
