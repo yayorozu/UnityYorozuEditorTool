@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -35,6 +36,7 @@ namespace Yorozu.EditorTools
 
         internal static IEnumerable<HierarchyData> HierarchyLogs => HierarchyLogData.instance.Logs;
         internal static IEnumerable<string> ProjectLogs => ProjectLogData.instance.Logs;
+
         internal static UpdateHierarchy UpdateHierarchyLog
         {
             get => HierarchyLogData.instance.UpdateLog;

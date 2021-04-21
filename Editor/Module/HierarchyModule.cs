@@ -53,9 +53,16 @@ namespace Yorozu.EditorTools
 			if (stage != null)
 			{
 				var root = stage.prefabContentsRoot;
-				var index = path.IndexOf("/") + 1;
-				path = path.Substring(index);
+				path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
 				var findChild = root.transform.Find(path);
+				// Editing Environment が設定されていた場合パスがずれるので再度取得
+				if (findChild == null)
+				{
+					path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+					findChild = root.transform.Find(path);
+					if (findChild == null)
+						return;
+				}
 
 				SelectionLog.SkipLog();
 				Selection.activeGameObject = findChild.gameObject;

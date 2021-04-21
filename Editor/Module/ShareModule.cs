@@ -30,7 +30,12 @@ namespace Yorozu.EditorTools
 			if (_data == null)
 				return new List<ToolTreeViewItem>();
 
-			return GUIDsToGroup(_data.SharaData.Select(d => d.GUID).ToArray());
+			return GUIDsToGroup(_data.Share.Select(d => d.GUID).ToArray());
+		}
+
+		internal override bool CanSearchDraw(ToolTreeViewItem item)
+		{
+			return item.depth >= 1;
 		}
 
 		internal override void DoubleClick(ToolTreeViewItem item) => OpenAsset(item);

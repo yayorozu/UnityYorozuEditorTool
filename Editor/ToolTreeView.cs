@@ -38,9 +38,13 @@ namespace Yorozu.EditorTools
         }
 
         private TreeViewItem Find(int id) => GetRows().First(i => i.id == id);
+        protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
+        {
+            if (!_editor.CurrentModule.CanSearchDraw(item as ToolTreeViewItem))
+                return false;
 
-        protected override void SearchChanged(string newSearch) => Reload();
-
+            return base.DoesItemMatchSearch(item, search);
+        }
 
         protected override void SingleClickedItem(int id)
         {

@@ -49,8 +49,7 @@ namespace Yorozu.EditorTools
         /// <summary>
         /// GUID の対象が存在しないのは省く
         /// </summary>
-        internal static IEnumerable<FavoriteData> Data => _saveData.Data
-            .Where(d => !string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(d.GUID)));
+        internal static IEnumerable<FavoriteData> Data => _saveData.Data;
 
         static FavoriteSave()
         {

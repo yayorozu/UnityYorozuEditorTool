@@ -20,7 +20,8 @@ namespace Yorozu.EditorTools
 		}
 
 		[SerializeField, HideInInspector]
-		internal List<Data> SharaData = new List<Data>();
+		private List<Data> _sharaData = new List<Data>();
+		internal IEnumerable<Data> Share => _sharaData;
 
 		internal static YorozuToolShareObject Load()
 		{
@@ -37,10 +38,10 @@ namespace Yorozu.EditorTools
 		{
 			foreach (var guid in guids)
 			{
-				if (SharaData.Any(d => d.GUID == guid))
+				if (_sharaData.Any(d => d.GUID == guid))
 					continue;
 
-				SharaData.Add(new Data(guid));
+				_sharaData.Add(new Data(guid));
 			}
 
 			// インスタンスがなかったら作成
@@ -62,7 +63,7 @@ namespace Yorozu.EditorTools
 
 		internal void Remove(params string[] guids)
 		{
-			var removeCount = SharaData.RemoveAll(d => guids.Contains(d.GUID));
+			var removeCount = _sharaData.RemoveAll(d => guids.Contains(d.GUID));
 			if (removeCount <= 0)
 				return;
 

@@ -26,6 +26,11 @@ namespace Yorozu.EditorTools
             FavoriteSave.UpdateEvent -= Reload;
         }
 
+        internal override bool CanSearchDraw(ToolTreeViewItem item)
+        {
+            return item.depth >= 1;
+        }
+
         internal override List<ToolTreeViewItem> GetItems() => GUIDsToGroup(FavoriteSave.Data.Select(d => d.GUID).ToArray());
 
         internal override void DoubleClick(ToolTreeViewItem item) => OpenAsset(item);

@@ -22,7 +22,10 @@ namespace Yorozu.EditorTools
 
 		internal abstract void Exit();
 
+
 		internal abstract List<ToolTreeViewItem> GetItems();
+
+		internal virtual bool CanSearchDraw(ToolTreeViewItem item) => true;
 
 		internal virtual void DoubleClick(ToolTreeViewItem item){}
 
@@ -36,27 +39,27 @@ namespace Yorozu.EditorTools
 
 		protected List<ToolTreeViewItem> GUIDsToGroup(string[] guids)
 		{
-			var list = new List<ToolTreeViewItem>();
-			var group = guids.GroupBy(guid =>
-			{
-				var path = AssetDatabase.GUIDToAssetPath(guid);
-				return AssetDatabase.GetMainAssetTypeAtPath(path);
-			}).OrderBy(g => g.Key.Name);
+			var group = guids
+				.Select(AssetDatabase.GUIDToAssetPath)
+				.Where(path => System.IO.File.Exists(path) || AssetDatabase.IsValidFolder(path))
+				.GroupBy(AssetDatabase.GetMainAssetTypeAtPath)
+				.OrderBy(g => g.Key.Name);
 
+			var list = new List<ToolTreeViewItem>();
 			foreach (var g in group)
 			{
-				var path = AssetDatabase.GUIDToAssetPath(g.First());
 				var root = new ToolTreeViewItem
 				{
 					id = list.Count,
 					depth = 0,
 					displayName = g.Key.Name,
-					icon = (Texture2D) AssetDatabase.GetCachedIcon(path),
+					icon = (Texture2D) AssetDatabase.GetCachedIcon(g.First()),
 					Data = g.Key,
 				};
-				foreach (var data in g)
+				foreach (var path in g)
 				{
-					var item = GUIDToItem(data);
+					var guid = AssetDatabase.AssetPathToGUID(path);
+					var item = GUIDToItem(guid);
 					if (item != null)
 						root.AddChild(item);
 				}
