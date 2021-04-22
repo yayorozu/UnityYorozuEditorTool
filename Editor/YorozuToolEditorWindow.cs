@@ -32,6 +32,7 @@ namespace Yorozu.EditorTools
         private void OnEnable()
         {
             Window = this;
+            _validShare = EditorPrefs.GetBool("YorozuTool.ValidShare", false);
             Init();
             CurrentModule.Enter();
         }
@@ -151,6 +152,7 @@ namespace Yorozu.EditorTools
             menu.AddItem(new GUIContent("Asset Share Enable"), _validShare, () =>
             {
                 _validShare = !_validShare;
+                EditorPrefs.SetBool("YorozuTool.ValidShare", _validShare);
                 if (_moduleIndex >= _modules.Length - 1)
                 {
                     _moduleIndex = 0;
