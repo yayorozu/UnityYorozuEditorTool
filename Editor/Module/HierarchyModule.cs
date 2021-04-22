@@ -21,7 +21,6 @@ namespace Yorozu.EditorTools
 		{
 			SelectionLog.UpdateHierarchyLog += i => Reload();
 			_icon = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
-
 		}
 
 		internal override void Exit()

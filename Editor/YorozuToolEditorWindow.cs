@@ -39,6 +39,7 @@ namespace Yorozu.EditorTools
 
         private void OnDisable()
         {
+            CurrentModule.Exit();
             Window = null;
         }
 
