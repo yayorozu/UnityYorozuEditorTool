@@ -12,7 +12,7 @@ namespace Yorozu.EditorTools
     internal class ProjectModule : Module
     {
         internal override string Name => "ProjectLog";
-        internal override Texture Texture => EditorResources.Load<Texture>("Project");
+        internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Project" : "Project");
         internal override bool CanDrag => true;
 
         internal override void Enter()

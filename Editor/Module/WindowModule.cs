@@ -10,7 +10,7 @@ namespace Yorozu.EditorTools
 	internal class WindowModule : Module
 	{
 		internal override string Name => "WindowLog";
-		internal override Texture Texture => EditorResources.Load<Texture>("winbtn_win_max");
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_winbtn_win_max" : "winbtn_win_max");
 		internal override bool CanDrag => false;
 
 		internal override void Enter()

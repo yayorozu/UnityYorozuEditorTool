@@ -10,7 +10,7 @@ namespace Yorozu.EditorTools
 	internal class ShareModule : Module
 	{
 		internal override string Name => "Share";
-		internal override Texture Texture => EditorResources.Load<Texture>("UnityEditor.Graphs.AnimatorControllerTool");
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.Graphs.AnimatorControllerTool" : "UnityEditor.Graphs.AnimatorControllerTool");
 		internal override bool CanDrag => true;
 
 		private YorozuToolShareObject _data;

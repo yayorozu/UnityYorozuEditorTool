@@ -12,7 +12,7 @@ namespace Yorozu.EditorTools
 	internal class HierarchyModule : Module
 	{
 		internal override string Name => "HierarchyLog";
-		internal override Texture Texture => EditorResources.Load<Texture>("UnityEditor.SceneHierarchyWindow");
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.SceneHierarchyWindow" : "UnityEditor.SceneHierarchyWindow");
 		internal override bool CanDrag => false;
 
 		internal override void Enter()

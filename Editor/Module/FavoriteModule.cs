@@ -13,7 +13,7 @@ namespace Yorozu.EditorTools
     internal class FavoriteModule : Module
     {
         internal override string Name => "Favorite";
-        internal override Texture Texture => EditorResources.Load<Texture>("Favorite");
+        internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Favorite" : "Favorite");
         internal override bool CanDrag => true;
 
         internal override void Enter()
