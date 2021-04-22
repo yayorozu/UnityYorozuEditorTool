@@ -10,8 +10,11 @@ namespace Yorozu.EditorTools
     [Serializable]
     internal class HierarchyData
     {
+        [SerializeField]
         internal string SceneName;
+        [SerializeField]
         internal string Path;
+        [SerializeField]
         internal string Name;
 
         public override bool Equals(object obj)
@@ -26,8 +29,8 @@ namespace Yorozu.EditorTools
         }
     }
 
-    internal delegate void  UpdateProject(IEnumerable<string> paths);
-    internal delegate void  UpdateHierarchy(IEnumerable<HierarchyData> paths);
+    internal delegate void UpdateProject(IEnumerable<string> paths);
+    internal delegate void UpdateHierarchy(IEnumerable<HierarchyData> paths);
 
     [InitializeOnLoad]
     internal static class SelectionLog

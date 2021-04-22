@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -27,6 +28,7 @@ namespace Yorozu.EditorTools
         private SearchField _searchField;
         private int _moduleIndex;
         private GUIContent[] _tabContents;
+        private bool _validShare;
 
         private void OnEnable()
         {
@@ -48,6 +50,7 @@ namespace Yorozu.EditorTools
                 {
                     new ProjectModule(),
                     new HierarchyModule(),
+                    new WindowModule(),
                     new FavoriteModule(),
                     new ShareModule(),
                 };
@@ -69,8 +72,9 @@ namespace Yorozu.EditorTools
 
             if (_tabContents == null)
             {
-                _tabContents = new GUIContent[_modules.Length];
-                for (var i = 0; i < _modules.Length; i++)
+                var length = _validShare ? _modules.Length : _modules.Length - 1;
+                _tabContents = new GUIContent[length];
+                for (var i = 0; i < length; i++)
                 {
                     _tabContents[i] = new GUIContent(_modules[i].Name, _modules[i].Texture);
                 }
@@ -145,6 +149,16 @@ namespace Yorozu.EditorTools
 
         void IHasCustomMenu.AddItemsToMenu(GenericMenu menu)
         {
+            menu.AddItem(new GUIContent("Asset Share Enable"), _validShare, () =>
+            {
+                _validShare = !_validShare;
+                if (_moduleIndex >= _modules.Length - 1)
+                {
+                    _moduleIndex = 0;
+                }
+                _tabContents = null;
+            });
+            menu.AddSeparator("");
             menu.AddItem(new GUIContent("Remove Invalid Favorite Asset"), false, () =>
             {
                 FavoriteSave.RemoveInactive();
