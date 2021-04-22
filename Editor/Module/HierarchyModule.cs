@@ -19,13 +19,13 @@ namespace Yorozu.EditorTools
 
 		internal override void Enter()
 		{
-			SelectionLog.UpdateHierarchyLog += i => Reload();
+			SelectionLog.UpdateHierarchyLog += Reload;
 			_icon = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
 		}
 
 		internal override void Exit()
 		{
-			SelectionLog.UpdateHierarchyLog -= i => Reload();
+			SelectionLog.UpdateHierarchyLog -= Reload;
 		}
 
 		internal override List<ToolTreeViewItem> GetItems()

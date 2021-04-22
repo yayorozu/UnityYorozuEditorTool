@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
-	internal delegate void UpdateShare ();
+	internal delegate void UpdateShare();
 
 	internal class YorozuToolShareObject : ScriptableObject
 	{

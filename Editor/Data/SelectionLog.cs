@@ -29,8 +29,8 @@ namespace Yorozu.EditorTools
         }
     }
 
-    internal delegate void UpdateProject(IEnumerable<string> paths);
-    internal delegate void UpdateHierarchy(IEnumerable<HierarchyData> paths);
+    internal delegate void UpdateProject();
+    internal delegate void UpdateHierarchy();
 
     [InitializeOnLoad]
     internal static class SelectionLog
@@ -68,7 +68,7 @@ namespace Yorozu.EditorTools
                 while (_logs.Count > LogMax)
                     _logs.RemoveAt(LogMax);
 
-                UpdateLog?.Invoke(_logs);
+                UpdateLog?.Invoke();
             }
         }
 
@@ -88,7 +88,7 @@ namespace Yorozu.EditorTools
                 while (_logs.Count > LogMax)
                     _logs.RemoveAt(LogMax);
 
-                UpdateLog?.Invoke(_logs);
+                UpdateLog?.Invoke();
             }
         }
 

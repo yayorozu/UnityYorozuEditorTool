@@ -17,12 +17,12 @@ namespace Yorozu.EditorTools
 
         internal override void Enter()
         {
-            SelectionLog.UpdateProjectLog += i => Reload();
+            SelectionLog.UpdateProjectLog += Reload;
         }
 
         internal override void Exit()
         {
-            SelectionLog.UpdateProjectLog -= i => Reload();
+            SelectionLog.UpdateProjectLog -= Reload;
         }
 
         internal override List<ToolTreeViewItem> GetItems()
