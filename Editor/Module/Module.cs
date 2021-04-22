@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -22,7 +23,6 @@ namespace Yorozu.EditorTools
 
 		internal abstract void Exit();
 
-
 		internal abstract List<ToolTreeViewItem> GetItems();
 
 		internal virtual bool CanSearchDraw(ToolTreeViewItem item) => true;
@@ -41,8 +41,14 @@ namespace Yorozu.EditorTools
 		{
 			var group = guids
 				.Select(AssetDatabase.GUIDToAssetPath)
-				.Where(path => System.IO.File.Exists(path) || AssetDatabase.IsValidFolder(path))
-				.GroupBy(AssetDatabase.GetMainAssetTypeAtPath)
+				.Where(path => File.Exists(path) || AssetDatabase.IsValidFolder(path))
+				.GroupBy(path =>
+				{
+					// ディレクトリとDefaultAsset を区別するため
+					return AssetDatabase.IsValidFolder(path) ?
+						typeof(Directory) :
+						AssetDatabase.GetMainAssetTypeAtPath(path);
+				})
 				.OrderBy(g => g.Key.Name);
 
 			var list = new List<ToolTreeViewItem>();
@@ -61,7 +67,20 @@ namespace Yorozu.EditorTools
 					var guid = AssetDatabase.AssetPathToGUID(path);
 					var item = GUIDToItem(guid);
 					if (item != null)
+					{
+						// フォルダだったら子供を取得する
+						if (AssetDatabase.IsValidFolder(path))
+						{
+							foreach (var file in Directory.GetFiles(path))
+							{
+								var childGuid = AssetDatabase.AssetPathToGUID(file);
+								var childItem = GUIDToItem(childGuid);
+								if (childItem != null)
+									item.AddChild(childItem);
+							}
+						}
 						root.AddChild(item);
+					}
 				}
 
 				if (root.hasChildren)
