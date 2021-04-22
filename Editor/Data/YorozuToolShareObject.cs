@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
+	internal delegate void UpdateShare ();
+
 	internal class YorozuToolShareObject : ScriptableObject
 	{
 		[MenuItem("Assets/Yorozu/AddShare")]
@@ -22,6 +24,8 @@ namespace Yorozu.EditorTools
 		[SerializeField, HideInInspector]
 		private List<Data> _sharaData = new List<Data>();
 		internal IEnumerable<Data> Share => _sharaData;
+
+		internal UpdateShare UpdateShare;
 
 		internal static YorozuToolShareObject Load()
 		{
@@ -59,6 +63,8 @@ namespace Yorozu.EditorTools
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
+
+			UpdateShare?.Invoke();
 		}
 
 		internal void Remove(params string[] guids)
@@ -69,6 +75,8 @@ namespace Yorozu.EditorTools
 
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
+
+			UpdateShare?.Invoke();
 		}
 
 		[Serializable]

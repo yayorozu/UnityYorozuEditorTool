@@ -18,10 +18,12 @@ namespace Yorozu.EditorTools
 		internal override void Enter()
 		{
 			_data = YorozuToolShareObject.Load();
+			_data.UpdateShare += Reload;
 		}
 
 		internal override void Exit()
 		{
+			_data.UpdateShare -= Reload;
 			_data = null;
 		}
 

@@ -44,6 +44,15 @@ namespace Yorozu.EditorTools
                 var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
                 FavoriteSave.Remove(AssetDatabase.AssetPathToGUID(path));
             });
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("ExpandAll"), false, () =>
+            {
+                _window.ExpandAll();
+            });
+            menu.AddItem(new GUIContent("CollapseAll"), false, () =>
+            {
+                _window.CollapseAll();
+            });
         }
 
         internal override IEnumerable<Object> GetDragObjects(IList<int> itemIds)

@@ -122,6 +122,16 @@ namespace Yorozu.EditorTools
             Repaint();
         }
 
+        internal void ExpandAll()
+        {
+            _treeView.ExpandAll();
+        }
+
+        internal void CollapseAll()
+        {
+            _treeView.CollapseAll();
+        }
+
         private void CheckDrop()
         {
             var @event = Event.current;
