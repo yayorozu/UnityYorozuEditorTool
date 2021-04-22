@@ -63,7 +63,7 @@ namespace Yorozu.EditorTools
 
             internal void AddLog(HierarchyData data)
             {
-                _logs.RemoveAll(l => l.Equals(data));
+                _logs.RemoveAll(l => l.Path == data.Path && l.Name == data.Name);
                 _logs.Insert(0, data);
                 while (_logs.Count > LogMax)
                     _logs.RemoveAt(LogMax);

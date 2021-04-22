@@ -15,9 +15,13 @@ namespace Yorozu.EditorTools
 		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.SceneHierarchyWindow" : "UnityEditor.SceneHierarchyWindow");
 		internal override bool CanDrag => false;
 
+		private Texture2D _icon;
+
 		internal override void Enter()
 		{
 			SelectionLog.UpdateHierarchyLog += i => Reload();
+			_icon = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
+
 		}
 
 		internal override void Exit()
@@ -36,6 +40,7 @@ namespace Yorozu.EditorTools
 						$"{pair.i.Path}" :
 						$"【{pair.i.SceneName}】{pair.i.Path}",
 					Data = pair.i.Path + "/" + pair.i.Name,
+					icon = _icon,
 				};
 
 				list.Add(item);
