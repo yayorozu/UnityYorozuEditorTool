@@ -49,6 +49,7 @@ namespace Yorozu.EditorTools
 						typeof(Directory) :
 						AssetDatabase.GetMainAssetTypeAtPath(path);
 				})
+				.Where(pair => pair.Key != null)
 				.OrderBy(g => g.Key.Name);
 
 			var list = new List<ToolTreeViewItem>();
