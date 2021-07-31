@@ -11,7 +11,7 @@ namespace Yorozu.EditorTools
 		/// </summary>
 		internal object Data;
 
-		internal string subLabel;
+		internal string SubLabel;
 
 		internal ToolTreeViewItem(){}
 
@@ -19,7 +19,7 @@ namespace Yorozu.EditorTools
 
 		private static class Style
 		{
-			internal static GUIStyle lineStyle = (GUIStyle) "TV Line";
+			internal static GUIStyle lineStyle = "TV Line";
 		}
 
 		private float _subLabelWidth;
@@ -29,7 +29,7 @@ namespace Yorozu.EditorTools
 			{
 				if (_subLabelWidth <= 0)
 				{
-					_subLabelWidth = EditorStyles.miniLabel.CalcSize(new GUIContent(subLabel)).x + 5f;
+					_subLabelWidth = EditorStyles.miniLabel.CalcSize(new GUIContent(SubLabel)).x + 5f;
 				}
 
 				return _subLabelWidth;

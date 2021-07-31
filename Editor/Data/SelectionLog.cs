@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace Yorozu.EditorTools
@@ -16,6 +17,8 @@ namespace Yorozu.EditorTools
         internal string Path;
         [SerializeField]
         internal string Name;
+        [SerializeField]
+        internal bool InPrefabEditor;
 
         public override bool Equals(object obj)
         {
@@ -116,11 +119,13 @@ namespace Yorozu.EditorTools
 
             foreach (var transform in Selection.transforms)
             {
+                var prefab = PrefabStageUtility.GetCurrentPrefabStage();
                 var data = new HierarchyData
                 {
                     SceneName = transform.gameObject.scene.name,
                     Path = HierarchyPath(transform),
                     Name = transform.name,
+                    InPrefabEditor = prefab != null,
                 };
                 HierarchyLogData.instance.AddLog(data);
             }

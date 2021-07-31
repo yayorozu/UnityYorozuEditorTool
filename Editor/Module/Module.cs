@@ -112,7 +112,7 @@ namespace Yorozu.EditorTools
 				depth = 0,
 				displayName = fileName,
 				icon = (Texture2D) AssetDatabase.GetCachedIcon(path),
-				subLabel = directory,
+				SubLabel = directory,
 				Data = path,
 			};
 

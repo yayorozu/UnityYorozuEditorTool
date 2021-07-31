@@ -15,12 +15,14 @@ namespace Yorozu.EditorTools
 		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.SceneHierarchyWindow" : "UnityEditor.SceneHierarchyWindow");
 		internal override bool CanDrag => false;
 
-		private Texture2D _icon;
+		private Texture2D _iconScene;
+		private Texture2D _iconPrefab;
 
 		internal override void Enter()
 		{
 			SelectionLog.UpdateHierarchyLog += Reload;
-			_icon = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
+			_iconScene = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab On Icon" : "Prefab On Icon");
+			_iconPrefab = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
 		}
 
 		internal override void Exit()
@@ -35,11 +37,11 @@ namespace Yorozu.EditorTools
 			{
 				var item = new ToolTreeViewItem(pair.index, 0, pair.i.Name)
 				{
-					subLabel = string.IsNullOrEmpty(pair.i.Name) ?
+					SubLabel = string.IsNullOrEmpty(pair.i.Name) ?
 						$"{pair.i.Path}" :
 						$"【{pair.i.SceneName}】{pair.i.Path}",
 					Data = pair.i.Path + "/" + pair.i.Name,
-					icon = _icon,
+					icon = pair.i.InPrefabEditor ? _iconPrefab : _iconScene,
 				};
 
 				list.Add(item);

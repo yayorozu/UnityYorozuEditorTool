@@ -103,7 +103,7 @@ namespace Yorozu.EditorTools
             var item = (ToolTreeViewItem) args.item;
 
             base.RowGUI(args);
-            if (string.IsNullOrEmpty(item.subLabel))
+            if (string.IsNullOrEmpty(item.SubLabel))
                 return;
 
             // 右端にsubLabel を表示
@@ -114,7 +114,7 @@ namespace Yorozu.EditorTools
             // 幅
             rect.width = Mathf.Min(rest, item.SubLabelWidth);
             rect.x = rect.x + args.rowRect.width - rect.width;
-            GUI.Label(rect, item.subLabel, EditorStyles.miniLabel);
+            GUI.Label(rect, item.SubLabel, EditorStyles.miniLabel);
         }
     }
 
