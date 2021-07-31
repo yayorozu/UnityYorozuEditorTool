@@ -33,6 +33,7 @@ namespace Yorozu.EditorTools
 					id = pair.index,
 					depth = 0,
 					displayName = pair.log.Title,
+					SubLabel = pair.log.TypeName,
 					icon = pair.log.Icon,
 					Data = pair.log.TypeNameSpace + ":" + pair.log.TypeName,
 				};
