@@ -11,17 +11,19 @@ namespace Yorozu.EditorTools
 	[Serializable]
 	internal class HierarchyModule : Module
 	{
-		internal override string Name => "HierarchyLog";
-		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.SceneHierarchyWindow" : "UnityEditor.SceneHierarchyWindow");
-		internal override bool CanDrag => false;
-
-		private Texture2D _iconScene;
 		private Texture2D _iconPrefab;
+		private Texture2D _iconScene;
+		internal override string Name => "HierarchyLog";
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin
+			? "d_UnityEditor.SceneHierarchyWindow"
+			: "UnityEditor.SceneHierarchyWindow");
+		internal override bool CanDrag => false;
 
 		internal override void Enter()
 		{
 			SelectionLog.UpdateHierarchyLog += Reload;
-			_iconScene = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab On Icon" : "Prefab On Icon");
+			_iconScene =
+				EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab On Icon" : "Prefab On Icon");
 			_iconPrefab = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
 		}
 
@@ -33,7 +35,7 @@ namespace Yorozu.EditorTools
 		internal override List<ToolTreeViewItem> GetItems()
 		{
 			var list = new List<ToolTreeViewItem>();
-			foreach (var pair in SelectionLog.HierarchyLogs.Select((i, index) => new{i, index}))
+			foreach (var pair in SelectionLog.HierarchyLogs.Select((i, index) => new {i, index}))
 			{
 				var item = pair.i.ToItem(pair.index);
 				item.icon = pair.i.InPrefabEditor ? _iconPrefab : _iconScene;

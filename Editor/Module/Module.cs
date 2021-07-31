@@ -14,29 +14,45 @@ namespace Yorozu.EditorTools
 	internal abstract class Module
 	{
 		protected YorozuToolEditorWindow _window => YorozuToolEditorWindow.Window;
-
-		protected void Reload() => _window.Reload();
-
 		internal abstract string Name { get; }
 		internal abstract Texture Texture { get; }
 		internal abstract bool CanDrag { get; }
+
+		protected void Reload()
+		{
+			_window.Reload();
+		}
+
 		internal abstract void Enter();
-
 		internal abstract void Exit();
-
 		internal abstract List<ToolTreeViewItem> GetItems();
 
-		internal virtual bool CanSearchDraw(ToolTreeViewItem item) => true;
+		internal virtual bool CanSearchDraw(ToolTreeViewItem item)
+		{
+			return true;
+		}
 
-		internal virtual bool DoubleClick(ToolTreeViewItem item) => false;
+		internal virtual bool DoubleClick(ToolTreeViewItem item)
+		{
+			return false;
+		}
 
-		internal virtual void SingleClick(ToolTreeViewItem item){}
+		internal virtual void SingleClick(ToolTreeViewItem item)
+		{
+		}
 
-		internal virtual void SelectionChanged(TreeViewItem[] items){}
+		internal virtual void SelectionChanged(TreeViewItem[] items)
+		{
+		}
 
-		internal virtual void GenerateMenu(TreeViewItem item, ref GenericMenu menu) { }
+		internal virtual void GenerateMenu(TreeViewItem item, ref GenericMenu menu)
+		{
+		}
 
-		internal virtual IEnumerable<Object> GetDragObjects(IList<int> itemIds) => new Object[0];
+		internal virtual IEnumerable<Object> GetDragObjects(IList<int> itemIds)
+		{
+			return new Object[0];
+		}
 
 		protected List<ToolTreeViewItem> GUIDsToGroup(string[] guids)
 		{
@@ -46,9 +62,9 @@ namespace Yorozu.EditorTools
 				.GroupBy(path =>
 				{
 					// ディレクトリとDefaultAsset を区別するため
-					return AssetDatabase.IsValidFolder(path) ?
-						typeof(Directory) :
-						AssetDatabase.GetMainAssetTypeAtPath(path);
+					return AssetDatabase.IsValidFolder(path)
+						? typeof(Directory)
+						: AssetDatabase.GetMainAssetTypeAtPath(path);
 				})
 				.Where(pair => pair.Key != null)
 				.OrderBy(g => g.Key.Name);
@@ -62,7 +78,7 @@ namespace Yorozu.EditorTools
 					depth = 0,
 					displayName = g.Key.Name,
 					icon = (Texture2D) AssetDatabase.GetCachedIcon(g.First()),
-					Data = g.Key,
+					Data = g.Key
 				};
 				foreach (var path in g)
 				{
@@ -72,7 +88,6 @@ namespace Yorozu.EditorTools
 					{
 						// フォルダだったら子供を取得する
 						if (AssetDatabase.IsValidFolder(path))
-						{
 							foreach (var file in Directory.GetFiles(path))
 							{
 								var childGuid = AssetDatabase.AssetPathToGUID(file);
@@ -80,15 +95,13 @@ namespace Yorozu.EditorTools
 								if (childItem != null)
 									item.AddChild(childItem);
 							}
-						}
+
 						root.AddChild(item);
 					}
 				}
 
 				if (root.hasChildren)
-				{
 					list.Add(root);
-				}
 			}
 
 			return list;
@@ -102,6 +115,7 @@ namespace Yorozu.EditorTools
 				return null;
 
 			var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+
 			if (asset == null)
 				return null;
 
@@ -114,7 +128,7 @@ namespace Yorozu.EditorTools
 				displayName = fileName,
 				icon = (Texture2D) AssetDatabase.GetCachedIcon(path),
 				SubLabel = directory,
-				Data = path,
+				Data = path
 			};
 
 			return item;
@@ -127,16 +141,13 @@ namespace Yorozu.EditorTools
 
 			var path = item.Data as string;
 			var guid = AssetDatabase.AssetPathToGUID(path);
+
 			// クリックしたやつはログの上に上げる
 			SelectionLog.AddProjectLog(guid);
 			if (AssetDatabase.IsValidFolder(path))
-			{
 				EditorUtility.RevealInFinder(path);
-			}
 			else
-			{
 				AssetDatabase.OpenAsset(EditorUtility.InstanceIDToObject(item.id));
-			}
 		}
 
 		protected void SelectObject(params TreeViewItem[] items)
@@ -149,7 +160,7 @@ namespace Yorozu.EditorTools
 		}
 
 		/// <summary>
-		/// Path から Hierarchy Object を選択
+		///     Path から Hierarchy Object を選択
 		/// </summary>
 		protected bool SelectHierarchyObject(string path)
 		{
@@ -160,24 +171,29 @@ namespace Yorozu.EditorTools
 				var root = stage.prefabContentsRoot;
 				path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
 				var findChild = root.transform.Find(path);
+
 				// Editing Environment が設定されていた場合パスがずれるので再度取得
 				if (findChild == null)
 				{
 					path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
 					findChild = root.transform.Find(path);
+
 					if (findChild == null)
 						return false;
 				}
 
 				Selection.activeGameObject = findChild.gameObject;
+
 				return true;
 			}
 
 			var find = GameObject.Find(path);
+
 			if (find == null)
 				return false;
 
 			Selection.activeGameObject = find;
+
 			return true;
 		}
 	}

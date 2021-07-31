@@ -6,126 +6,135 @@ using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
-    internal class ToolTreeView : TreeView
-    {
-        private YorozuToolEditorWindow _editor;
+	internal class ToolTreeView : TreeView
+	{
+		private readonly YorozuToolEditorWindow _editor;
 
-        public ToolTreeView(TreeViewState state, YorozuToolEditorWindow editor) : base(state)
-        {
-            _editor = editor;
-            showAlternatingRowBackgrounds = true;
-            showBorder = true;
-            Reload();
-        }
+		public ToolTreeView(TreeViewState state, YorozuToolEditorWindow editor) : base(state)
+		{
+			_editor = editor;
+			showAlternatingRowBackgrounds = true;
+			showBorder = true;
+			Reload();
+		}
 
-        public ToolTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader) : base(state, multiColumnHeader) { }
+		public ToolTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader) : base(state, multiColumnHeader)
+		{
+		}
 
-        protected override TreeViewItem BuildRoot()
-        {
-            var root = new TreeViewItem(0, -1);
-            foreach (var item in _editor.CurrentModule.GetItems())
-            {
-                root.AddChild(item);
-            }
+		protected override TreeViewItem BuildRoot()
+		{
+			var root = new TreeViewItem(0, -1);
+			foreach (var item in _editor.CurrentModule.GetItems())
+				root.AddChild(item);
 
-            SetupDepthsFromParentsAndChildren(root);
-            // Childrenが無いとエラーになるので仮作成
-            if (!root.hasChildren)
-            {
-                root.AddChild(new ToolTreeViewItem{id = 0, depth = -1});
-            }
-            return root;
-        }
+			SetupDepthsFromParentsAndChildren(root);
 
-        private TreeViewItem Find(int id) => GetRows().First(i => i.id == id);
+			// Childrenが無いとエラーになるので仮作成
+			if (!root.hasChildren)
+				root.AddChild(new ToolTreeViewItem {id = 0, depth = -1});
 
-        protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
-        {
-            if (!_editor.CurrentModule.CanSearchDraw(item as ToolTreeViewItem))
-                return false;
+			return root;
+		}
 
-            return base.DoesItemMatchSearch(item, search);
-        }
+		private TreeViewItem Find(int id)
+		{
+			return GetRows().First(i => i.id == id);
+		}
 
-        protected override void SingleClickedItem(int id)
-        {
-            _editor.CurrentModule.SingleClick(Find(id) as ToolTreeViewItem);
-        }
+		protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
+		{
+			if (!_editor.CurrentModule.CanSearchDraw(item as ToolTreeViewItem))
+				return false;
 
-        protected override void DoubleClickedItem(int id)
-        {
-            if (_editor.CurrentModule.DoubleClick(Find(id) as ToolTreeViewItem))
-            {
-                var first = GetRows().First();
-                // 選択を一番上に
-                if (first != null)
-                {
-                    SetSelection(new List<int> {first.id});
-                }
-            }
-        }
+			return base.DoesItemMatchSearch(item, search);
+		}
 
-        protected override void SelectionChanged(IList<int> selectedIds)
-        {
-            if (selectedIds.Count <= 0)
-                return;
+		protected override void SingleClickedItem(int id)
+		{
+			_editor.CurrentModule.SingleClick(Find(id) as ToolTreeViewItem);
+		}
 
-            _editor.CurrentModule.SelectionChanged(selectedIds.Select(Find).ToArray());
-        }
+		protected override void DoubleClickedItem(int id)
+		{
+			if (_editor.CurrentModule.DoubleClick(Find(id) as ToolTreeViewItem))
+			{
+				var first = GetRows().First();
 
-        protected override bool CanMultiSelect(TreeViewItem item) => false;
+				// 選択を一番上に
+				if (first != null)
+					SetSelection(new List<int> {first.id});
+			}
+		}
 
-        protected override bool CanStartDrag(CanStartDragArgs args)
-        {
-            return _editor.CurrentModule.CanDrag;
-        }
+		protected override void SelectionChanged(IList<int> selectedIds)
+		{
+			if (selectedIds.Count <= 0)
+				return;
 
-        protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
-        {
-            if (args.draggedItemIDs.Count <= 0)
-                return;
+			_editor.CurrentModule.SelectionChanged(selectedIds.Select(Find).ToArray());
+		}
 
-            var dragObjects = new List<Object>(args.draggedItemIDs.Count);
-            dragObjects.AddRange(_editor.CurrentModule.GetDragObjects(args.draggedItemIDs));
+		protected override bool CanMultiSelect(TreeViewItem item)
+		{
+			return false;
+		}
 
-            if (dragObjects.Count <= 0)
-                return;
+		protected override bool CanStartDrag(CanStartDragArgs args)
+		{
+			return _editor.CurrentModule.CanDrag;
+		}
 
-            DragAndDrop.PrepareStartDrag();
-            DragAndDrop.paths = null;
-            DragAndDrop.objectReferences = dragObjects.ToArray();
-            DragAndDrop.SetGenericData("Tool", new List<int>(args.draggedItemIDs));
-            DragAndDrop.StartDrag(dragObjects.Count > 1 ? "<Multiple>" : dragObjects[0].name);
-        }
+		protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
+		{
+			if (args.draggedItemIDs.Count <= 0)
+				return;
 
-        protected override void ContextClickedItem(int id)
-        {
-            var @event = Event.current;
-            @event.Use();
+			var dragObjects = new List<Object>(args.draggedItemIDs.Count);
+			dragObjects.AddRange(_editor.CurrentModule.GetDragObjects(args.draggedItemIDs));
 
-            var menu = new GenericMenu();
-            _editor.CurrentModule.GenerateMenu(Find(id), ref menu);
-            // 各所で追加
-            menu.ShowAsContext();
-        }
+			if (dragObjects.Count <= 0)
+				return;
 
-        protected override void RowGUI(RowGUIArgs args)
-        {
-            var item = (ToolTreeViewItem) args.item;
+			DragAndDrop.PrepareStartDrag();
+			DragAndDrop.paths = null;
+			DragAndDrop.objectReferences = dragObjects.ToArray();
+			DragAndDrop.SetGenericData("Tool", new List<int>(args.draggedItemIDs));
+			DragAndDrop.StartDrag(dragObjects.Count > 1 ? "<Multiple>" : dragObjects[0].name);
+		}
 
-            base.RowGUI(args);
-            if (string.IsNullOrEmpty(item.SubLabel))
-                return;
+		protected override void ContextClickedItem(int id)
+		{
+			var @event = Event.current;
+			@event.Use();
 
-            // 右端にsubLabel を表示
-            var rect = args.rowRect;
-            var width = rect.x + item.LabelWidth + 20f;
-            // 残り幅
-            var rest = rect.width - width;
-            // 幅
-            rect.width = Mathf.Min(rest, item.SubLabelWidth);
-            rect.x = rect.x + args.rowRect.width - rect.width;
-            GUI.Label(rect, item.SubLabel, EditorStyles.miniLabel);
-        }
-    }
+			var menu = new GenericMenu();
+			_editor.CurrentModule.GenerateMenu(Find(id), ref menu);
+
+			// 各所で追加
+			menu.ShowAsContext();
+		}
+
+		protected override void RowGUI(RowGUIArgs args)
+		{
+			var item = (ToolTreeViewItem) args.item;
+
+			base.RowGUI(args);
+
+			if (string.IsNullOrEmpty(item.SubLabel))
+				return;
+
+			// 右端にsubLabel を表示
+			var rect = args.rowRect;
+			var width = rect.x + item.LabelWidth + 20f;
+
+			// 残り幅
+			var rest = rect.width - width;
+
+			// 幅
+			rect.width = Mathf.Min(rest, item.SubLabelWidth);
+			rect.x = rect.x + args.rowRect.width - rect.width;
+			GUI.Label(rect, item.SubLabel, EditorStyles.miniLabel);
+		}
+	}
 }

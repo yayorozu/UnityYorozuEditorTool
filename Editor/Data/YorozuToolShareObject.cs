@@ -10,30 +10,30 @@ namespace Yorozu.EditorTools
 
 	internal class YorozuToolShareObject : ScriptableObject
 	{
+		[SerializeField]
+		[HideInInspector]
+		private List<Data> _sharaData = new List<Data>();
+		internal UpdateShare UpdateShare;
+		internal IEnumerable<Data> Share => _sharaData;
+
 		[MenuItem("Assets/Yorozu/AddShare")]
 		private static void Menu()
 		{
 			var guids = Selection.assetGUIDs;
-			if(guids.Length <= 0)
+
+			if (guids.Length <= 0)
 				return;
 
 			var data = Load();
 			data.Add(guids);
 		}
 
-		[SerializeField, HideInInspector]
-		private List<Data> _sharaData = new List<Data>();
-		internal IEnumerable<Data> Share => _sharaData;
-
-		internal UpdateShare UpdateShare;
-
 		internal static YorozuToolShareObject Load()
 		{
-			var data = AssetDatabase.LoadAssetAtPath<YorozuToolShareObject>("Assets/Editor Default Resources/Yorozu/Share.asset");
+			var data = AssetDatabase.LoadAssetAtPath<YorozuToolShareObject>(
+				"Assets/Editor Default Resources/Yorozu/Share.asset");
 			if (data == null)
-			{
 				data = CreateInstance<YorozuToolShareObject>();
-			}
 
 			return data;
 		}
@@ -70,6 +70,7 @@ namespace Yorozu.EditorTools
 		internal void Remove(params string[] guids)
 		{
 			var removeCount = _sharaData.RemoveAll(d => guids.Contains(d.GUID));
+
 			if (removeCount <= 0)
 				return;
 

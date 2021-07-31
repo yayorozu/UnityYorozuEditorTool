@@ -33,15 +33,19 @@ namespace Yorozu.EditorTools
 	internal static class EditorWindowLog
 	{
 		private static EditorWindow _currentWindow;
-
-		internal static IEnumerable<WindowData> Logs => EditorWindowLogData.instance.Logs;
-
 		private static int _count;
 		private static int _skipCount;
 
 		static EditorWindowLog()
 		{
 			EditorApplication.update += Update;
+		}
+
+		internal static IEnumerable<WindowData> Logs => EditorWindowLogData.instance.Logs;
+		internal static UpdateWindow UpdateLog
+		{
+			get => EditorWindowLogData.instance.UpdateLog;
+			set => EditorWindowLogData.instance.UpdateLog = value;
 		}
 
 		private static void Update()
@@ -56,36 +60,22 @@ namespace Yorozu.EditorTools
 				if (_currentWindow != null && _currentWindow.GetType() != typeof(YorozuToolEditorWindow))
 				{
 					if (_skipCount > 0)
-					{
 						_skipCount--;
-					}
 					else
-					{
 						EditorWindowLogData.instance.AddLog(new WindowData(_currentWindow));
-					}
 				}
-
 			}
 
 			_count = 100;
 		}
 
-		internal static UpdateWindow UpdateLog
-		{
-			get => EditorWindowLogData.instance.UpdateLog;
-			set => EditorWindowLogData.instance.UpdateLog = value;
-		}
-
 		private class EditorWindowLogData : ScriptableSingleton<EditorWindowLogData>
 		{
-			internal IEnumerable<WindowData> Logs => instance._logs;
-
-			internal UpdateWindow UpdateLog;
-
+			private const int LogMax = 50;
 			[SerializeField]
 			private List<WindowData> _logs = new List<WindowData>(LogMax + 1);
-			private const int LogMax = 50;
-
+			internal UpdateWindow UpdateLog;
+			internal IEnumerable<WindowData> Logs => instance._logs;
 
 			internal void AddLog(WindowData data)
 			{

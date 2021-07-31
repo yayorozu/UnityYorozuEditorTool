@@ -6,99 +6,103 @@ using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
-    [Serializable]
-    internal class FavoriteData
-    {
-        [SerializeField]
-        internal string GUID;
+	[Serializable]
+	internal class FavoriteData
+	{
+		[SerializeField]
+		internal string GUID;
 
-        internal FavoriteData(string guid)
-        {
-            GUID = guid;
-        }
-    }
+		internal FavoriteData(string guid)
+		{
+			GUID = guid;
+		}
+	}
 
     /// <summary>
-    /// お気に入りのAssetデータをPrefabに保存
+    ///     お気に入りのAssetデータをPrefabに保存
     /// </summary>
     internal static class FavoriteAssetSave
-    {
-        [MenuItem("Assets/Yorozu/AddFavorite")]
-        private static void AddFavorite()
-        {
-            var guids = Selection.assetGUIDs;
-            if(guids.Length <= 0)
-                return;
+	{
+		private static readonly string _key = Application.productName + "YorozuTool";
+		private static readonly SaveData _saveData;
 
-            Add(guids);
-        }
+		static FavoriteAssetSave()
+		{
+			var json = EditorPrefs.GetString(_key);
+			_saveData = string.IsNullOrEmpty(json) ? new SaveData() : JsonUtility.FromJson<SaveData>(json);
+		}
 
-        [Serializable]
-        private class SaveData
-        {
-            [SerializeField]
-            internal List<FavoriteData> Data = new List<FavoriteData>();
-        }
+		internal static IEnumerable<FavoriteData> Data => _saveData.Data;
 
-        private static readonly string _key = Application.productName + "YorozuTool";
-        private static SaveData _saveData;
+		[MenuItem("Assets/Yorozu/AddFavorite")]
+		private static void AddFavorite()
+		{
+			var guids = Selection.assetGUIDs;
 
-        internal static event Action UpdateEvent;
-        internal static IEnumerable<FavoriteData> Data => _saveData.Data;
+			if (guids.Length <= 0)
+				return;
 
-        static FavoriteAssetSave()
-        {
-            var json = EditorPrefs.GetString(_key);
-            _saveData = string.IsNullOrEmpty(json) ?
-                new SaveData() :
-                JsonUtility.FromJson<SaveData>(json);
-        }
+			Add(guids);
+		}
 
-        private static void Save()
-        {
-            EditorPrefs.SetString(_key, JsonUtility.ToJson(_saveData));
-            UpdateEvent?.Invoke();
-        }
+		internal static event Action UpdateEvent;
 
-        internal static void Add(params string[] guids)
-        {
-            var validGuid = guids.Distinct().Where(guid => _saveData.Data.FindIndex(d => d.GUID == guid) < 0).ToArray();
-            if (validGuid.Length <= 0)
-                return;
+		private static void Save()
+		{
+			EditorPrefs.SetString(_key, JsonUtility.ToJson(_saveData));
+			UpdateEvent?.Invoke();
+		}
 
-            _saveData.Data.AddRange(validGuid.Select(guid => new FavoriteData(guid)));
+		internal static void Add(params string[] guids)
+		{
+			var validGuid = guids.Distinct().Where(guid => _saveData.Data.FindIndex(d => d.GUID == guid) < 0).ToArray();
 
-            Save();
-        }
+			if (validGuid.Length <= 0)
+				return;
 
-        internal static void Remove(params string[] guids)
-        {
-            var removeCount = _saveData.Data.RemoveAll(d => guids.Contains(d.GUID));
-            if (removeCount <= 0)
-                return;
+			_saveData.Data.AddRange(validGuid.Select(guid => new FavoriteData(guid)));
 
-            Save();
-        }
+			Save();
+		}
+
+		internal static void Remove(params string[] guids)
+		{
+			var removeCount = _saveData.Data.RemoveAll(d => guids.Contains(d.GUID));
+
+			if (removeCount <= 0)
+				return;
+
+			Save();
+		}
 
         /// <summary>
-        /// 存在しないGUIDのものを削除
+        ///     存在しないGUIDのものを削除
         /// </summary>
         internal static void RemoveInactive()
-        {
-            var removeCount = _saveData.Data.RemoveAll(d => string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(d.GUID)));
-            if (removeCount <= 0)
-                return;
+		{
+			var removeCount =
+				_saveData.Data.RemoveAll(d => string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(d.GUID)));
 
-            Save();
-        }
+			if (removeCount <= 0)
+				return;
+
+			Save();
+		}
 
         /// <summary>
-        /// 初期化
+        ///     初期化
         /// </summary>
         internal static void Clear()
-        {
-            _saveData.Data.Clear();
-            Save();
-        }
-    }
+		{
+			_saveData.Data.Clear();
+			Save();
+		}
+
+		[Serializable]
+		private class SaveData
+		{
+			[SerializeField]
+			internal List<FavoriteData> Data = new List<FavoriteData>();
+		}
+	}
 }

@@ -9,11 +9,12 @@ namespace Yorozu.EditorTools
 {
 	internal class ShareModule : Module
 	{
-		internal override string Name => "Share";
-		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.Graphs.AnimatorControllerTool" : "UnityEditor.Graphs.AnimatorControllerTool");
-		internal override bool CanDrag => true;
-
 		private YorozuToolShareObject _data;
+		internal override string Name => "Share";
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin
+			? "d_UnityEditor.Graphs.AnimatorControllerTool"
+			: "UnityEditor.Graphs.AnimatorControllerTool");
+		internal override bool CanDrag => true;
 
 		internal override void Enter()
 		{
@@ -43,10 +44,14 @@ namespace Yorozu.EditorTools
 		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
 			OpenAsset(item);
+
 			return false;
 		}
 
-		internal override void SingleClick(ToolTreeViewItem item) => SelectObject(item);
+		internal override void SingleClick(ToolTreeViewItem item)
+		{
+			SelectObject(item);
+		}
 
 		internal override void GenerateMenu(TreeViewItem item, ref GenericMenu menu)
 		{
@@ -62,6 +67,7 @@ namespace Yorozu.EditorTools
 						.ToArray();
 
 					_data.Remove(childGUIDs);
+
 					return;
 				}
 

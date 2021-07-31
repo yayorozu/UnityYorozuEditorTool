@@ -10,7 +10,8 @@ namespace Yorozu.EditorTools
 	internal class WindowModule : Module
 	{
 		internal override string Name => "WindowLog";
-		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_winbtn_win_max" : "winbtn_win_max");
+		internal override Texture Texture =>
+			EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_winbtn_win_max" : "winbtn_win_max");
 		internal override bool CanDrag => false;
 
 		internal override void Enter()
@@ -28,14 +29,14 @@ namespace Yorozu.EditorTools
 			var list = new List<ToolTreeViewItem>();
 			foreach (var pair in EditorWindowLog.Logs.Select((log, index) => new {log, index}))
 			{
-				var item = new ToolTreeViewItem()
+				var item = new ToolTreeViewItem
 				{
 					id = pair.index,
 					depth = 0,
 					displayName = pair.log.Title,
 					SubLabel = pair.log.TypeName,
 					icon = pair.log.Icon,
-					Data = pair.log.TypeNameSpace + ":" + pair.log.TypeName,
+					Data = pair.log.TypeNameSpace + ":" + pair.log.TypeName
 				};
 				list.Add(item);
 			}
@@ -46,10 +47,9 @@ namespace Yorozu.EditorTools
 		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
 			var typeString = item.Data as string;
+
 			if (typeString == null)
-			{
 				return false;
-			}
 
 			var split = typeString.Split(':');
 			var findType = AppDomain.CurrentDomain
@@ -60,10 +60,12 @@ namespace Yorozu.EditorTools
 			if (findType == null)
 			{
 				Debug.LogWarning(typeString + " is not found");
+
 				return false;
 			}
 
 			var findObjects = Resources.FindObjectsOfTypeAll(findType);
+
 			// すでにOpen
 			if (findObjects.Length > 0)
 			{

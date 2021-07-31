@@ -6,7 +6,7 @@ namespace Yorozu.EditorTools
 	internal static class TreeViewExtension
 	{
 		/// <summary>
-		/// GUID に変換
+		///     GUID に変換
 		/// </summary>
 		internal static string GetGUID(this TreeViewItem self)
 		{

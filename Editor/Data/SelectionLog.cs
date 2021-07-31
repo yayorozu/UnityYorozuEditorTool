@@ -4,97 +4,98 @@ using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
-    internal delegate void UpdateProject();
-    internal delegate void UpdateHierarchy();
+	internal delegate void UpdateProject();
 
-    [InitializeOnLoad]
-    internal static class SelectionLog
-    {
-        internal static IEnumerable<HierarchyData> HierarchyLogs => HierarchyLogData.instance.Logs;
-        internal static IEnumerable<string> ProjectLogs => ProjectLogData.instance.Logs;
+	internal delegate void UpdateHierarchy();
 
-        internal static void AddProjectLog(string guid) => ProjectLogData.instance.AddLog(guid);
-        private static int _skipCount;
+	[InitializeOnLoad]
+	internal static class SelectionLog
+	{
+		private static int _skipCount;
 
-        internal static UpdateHierarchy UpdateHierarchyLog
-        {
-            get => HierarchyLogData.instance.UpdateLog;
-            set => HierarchyLogData.instance.UpdateLog = value;
-        }
-        internal static UpdateProject UpdateProjectLog
-        {
-            get => ProjectLogData.instance.UpdateLog;
-            set => ProjectLogData.instance.UpdateLog = value;
-        }
+		static SelectionLog()
+		{
+			Selection.selectionChanged += SelectionChanged;
+		}
 
-        static SelectionLog()
-        {
-            Selection.selectionChanged += SelectionChanged;
-        }
+		internal static IEnumerable<HierarchyData> HierarchyLogs => HierarchyLogData.instance.Logs;
+		internal static IEnumerable<string> ProjectLogs => ProjectLogData.instance.Logs;
+		internal static UpdateHierarchy UpdateHierarchyLog
+		{
+			get => HierarchyLogData.instance.UpdateLog;
+			set => HierarchyLogData.instance.UpdateLog = value;
+		}
+		internal static UpdateProject UpdateProjectLog
+		{
+			get => ProjectLogData.instance.UpdateLog;
+			set => ProjectLogData.instance.UpdateLog = value;
+		}
 
-        private class HierarchyLogData : ScriptableSingleton<HierarchyLogData>
-        {
-            internal IEnumerable<HierarchyData> Logs => instance._logs;
+		internal static void AddProjectLog(string guid)
+		{
+			ProjectLogData.instance.AddLog(guid);
+		}
 
-            internal UpdateHierarchy UpdateLog;
+		internal static void SkipLog(int count = 1)
+		{
+			_skipCount += count;
+		}
 
-            [SerializeField]
-            private List<HierarchyData> _logs = new List<HierarchyData>(LogMax + 1);
-            private const int LogMax = 50;
+		private static void SelectionChanged()
+		{
+			if (_skipCount > 0)
+			{
+				_skipCount--;
 
-            internal void AddLog(HierarchyData data)
-            {
-                _logs.RemoveAll(l => l.Path == data.Path && l.Name == data.Name);
-                _logs.Insert(0, data);
-                while (_logs.Count > LogMax)
-                    _logs.RemoveAt(LogMax);
+				return;
+			}
 
-                UpdateLog?.Invoke();
-            }
-        }
+			foreach (var transform in Selection.transforms)
+			{
+				var data = HierarchyData.Convert(transform);
+				HierarchyLogData.instance.AddLog(data);
+			}
 
-        private class ProjectLogData : ScriptableSingleton<ProjectLogData>
-        {
-            internal IEnumerable<string> Logs => instance._logs;
-            [SerializeField]
-            private List<string> _logs = new List<string>(LogMax + 1);
-            private const int LogMax = 50;
+			foreach (var guid in Selection.assetGUIDs)
+				ProjectLogData.instance.AddLog(guid);
+		}
 
-            internal UpdateProject UpdateLog;
+		private class HierarchyLogData : ScriptableSingleton<HierarchyLogData>
+		{
+			private const int LogMax = 50;
+			[SerializeField]
+			private List<HierarchyData> _logs = new List<HierarchyData>(LogMax + 1);
+			internal UpdateHierarchy UpdateLog;
+			internal IEnumerable<HierarchyData> Logs => instance._logs;
 
-            internal void AddLog(string data)
-            {
-                _logs.RemoveAll(l => l.Equals(data));
-                _logs.Insert(0, data);
-                while (_logs.Count > LogMax)
-                    _logs.RemoveAt(LogMax);
+			internal void AddLog(HierarchyData data)
+			{
+				_logs.RemoveAll(l => l.Path == data.Path && l.Name == data.Name);
+				_logs.Insert(0, data);
+				while (_logs.Count > LogMax)
+					_logs.RemoveAt(LogMax);
 
-                UpdateLog?.Invoke();
-            }
-        }
+				UpdateLog?.Invoke();
+			}
+		}
 
-        internal static void SkipLog(int count = 1)
-        {
-            _skipCount += count;
-        }
+		private class ProjectLogData : ScriptableSingleton<ProjectLogData>
+		{
+			private const int LogMax = 50;
+			[SerializeField]
+			private List<string> _logs = new List<string>(LogMax + 1);
+			internal UpdateProject UpdateLog;
+			internal IEnumerable<string> Logs => instance._logs;
 
-        private static void SelectionChanged()
-        {
-            if (_skipCount > 0)
-            {
-                _skipCount--;
-                return;
-            }
+			internal void AddLog(string data)
+			{
+				_logs.RemoveAll(l => l.Equals(data));
+				_logs.Insert(0, data);
+				while (_logs.Count > LogMax)
+					_logs.RemoveAt(LogMax);
 
-            foreach (var transform in Selection.transforms)
-            {
-                var data = HierarchyData.Convert(transform);
-                HierarchyLogData.instance.AddLog(data);
-            }
-            foreach (var guid in Selection.assetGUIDs)
-            {
-                ProjectLogData.instance.AddLog(guid);
-            }
-        }
-    }
+				UpdateLog?.Invoke();
+			}
+		}
+	}
 }
