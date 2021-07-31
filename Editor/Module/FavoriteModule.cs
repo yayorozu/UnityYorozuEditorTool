@@ -45,6 +45,19 @@ namespace Yorozu.EditorTools
         {
             menu.AddItem(new GUIContent("Remove"), false, () =>
             {
+                // カテゴリだったら子供を全部削除
+                if (item.depth == 0)
+                {
+                    var childGUIDs = item.children
+                        .Select(c => EditorUtility.InstanceIDToObject(c.id))
+                        .Select(AssetDatabase.GetAssetPath)
+                        .Select(AssetDatabase.AssetPathToGUID)
+                        .ToArray();
+
+                    FavoriteSave.Remove(childGUIDs);
+                    return;
+                }
+
                 var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
                 FavoriteSave.Remove(AssetDatabase.AssetPathToGUID(path));
             });

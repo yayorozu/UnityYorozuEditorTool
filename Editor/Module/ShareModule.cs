@@ -52,6 +52,18 @@ namespace Yorozu.EditorTools
 		{
 			menu.AddItem(new GUIContent("Remove"), false, () =>
 			{
+				if (item.depth == 0)
+				{
+					var childGUIDs = item.children
+						.Select(c => EditorUtility.InstanceIDToObject(c.id))
+						.Select(AssetDatabase.GetAssetPath)
+						.Select(AssetDatabase.AssetPathToGUID)
+						.ToArray();
+
+					_data.Remove(childGUIDs);
+					return;
+				}
+
 				var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
 				_data.Remove(AssetDatabase.AssetPathToGUID(path));
 				Reload();
