@@ -40,6 +40,8 @@ namespace Yorozu.EditorTools
         internal static IEnumerable<HierarchyData> HierarchyLogs => HierarchyLogData.instance.Logs;
         internal static IEnumerable<string> ProjectLogs => ProjectLogData.instance.Logs;
 
+        internal static void AddProjectLog(string guid) => ProjectLogData.instance.AddLog(guid);
+
         internal static UpdateHierarchy UpdateHierarchyLog
         {
             get => HierarchyLogData.instance.UpdateLog;

@@ -125,6 +125,9 @@ namespace Yorozu.EditorTools
 				return;
 
 			var path = item.Data as string;
+			var guid = AssetDatabase.AssetPathToGUID(path);
+			// クリックしたやつはログの上に上げる
+			SelectionLog.AddProjectLog(guid);
 			if (AssetDatabase.IsValidFolder(path))
 			{
 				EditorUtility.RevealInFinder(path);
