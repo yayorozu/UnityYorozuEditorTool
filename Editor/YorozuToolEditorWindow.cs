@@ -139,16 +139,28 @@ namespace Yorozu.EditorTools
             var @event = Event.current;
             if (@event.type == EventType.DragUpdated || @event.type == EventType.DragPerform)
             {
-                var paths = DragAndDrop.paths;
-
-                if (mouseOverWindow != this || paths.Length <= 0)
+                if (mouseOverWindow != this)
                     return;
 
                 DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
                 if (@event.type == EventType.DragPerform)
                 {
                     DragAndDrop.activeControlID = 0;
-                    FavoriteAssetSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
+
+                    var paths = DragAndDrop.paths;
+                    if (paths.Length > 0)
+                    {
+                        FavoriteAssetSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
+                    }
+                    var objects = DragAndDrop.objectReferences;
+                    if (objects.Length > 0)
+                    {
+                        var data = objects.Cast<GameObject>()
+                            .Select(g => g.transform)
+                            .Select(HierarchyData.Convert)
+                            .ToArray();
+                        FavoriteHierarchySave.Add(data);
+                    }
                     DragAndDrop.AcceptDrag();
                 }
                 else

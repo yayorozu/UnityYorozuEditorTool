@@ -44,7 +44,6 @@ namespace Yorozu.EditorTools
 			return list;
 		}
 
-
 		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
 			return SelectHierarchyObject(item.Data as string);
