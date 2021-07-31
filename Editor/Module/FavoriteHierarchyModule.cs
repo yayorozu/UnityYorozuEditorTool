@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -44,6 +43,7 @@ namespace Yorozu.EditorTools
 
 			return list;
 		}
+
 
 		internal override bool DoubleClick(ToolTreeViewItem item)
 		{

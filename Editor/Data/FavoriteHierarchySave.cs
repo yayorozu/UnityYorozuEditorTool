@@ -18,7 +18,7 @@ namespace Yorozu.EditorTools
             internal List<HierarchyData> Data = new List<HierarchyData>();
         }
 
-        private static readonly string _key = Application.productName + "YorozuTool";
+        private static readonly string _key = Application.productName + "FavoriteHierarchySave";
 
         private static SaveData _saveData;
 
