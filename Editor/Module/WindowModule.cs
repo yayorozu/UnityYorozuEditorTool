@@ -42,12 +42,12 @@ namespace Yorozu.EditorTools
 			return list;
 		}
 
-		internal override void DoubleClick(ToolTreeViewItem item)
+		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
 			var typeString = item.Data as string;
 			if (typeString == null)
 			{
-				return;
+				return false;
 			}
 
 			var split = typeString.Split(':');
@@ -59,10 +59,9 @@ namespace Yorozu.EditorTools
 			if (findType == null)
 			{
 				Debug.LogWarning(typeString + " is not found");
-				return;
+				return false;
 			}
 
-			EditorWindowLog.SkipLog();
 			var findObjects = Resources.FindObjectsOfTypeAll(findType);
 			// すでにOpen
 			if (findObjects.Length > 0)
@@ -75,6 +74,8 @@ namespace Yorozu.EditorTools
 				var window = EditorWindow.GetWindow(findType);
 				window.titleContent = new GUIContent(item.displayName, item.icon);
 			}
+
+			return true;
 		}
 	}
 }

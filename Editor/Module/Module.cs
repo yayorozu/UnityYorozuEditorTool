@@ -27,7 +27,7 @@ namespace Yorozu.EditorTools
 
 		internal virtual bool CanSearchDraw(ToolTreeViewItem item) => true;
 
-		internal virtual void DoubleClick(ToolTreeViewItem item){}
+		internal virtual bool DoubleClick(ToolTreeViewItem item) => false;
 
 		internal virtual void SingleClick(ToolTreeViewItem item){}
 

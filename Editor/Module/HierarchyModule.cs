@@ -50,7 +50,7 @@ namespace Yorozu.EditorTools
 			return list;
 		}
 
-		internal override void DoubleClick(ToolTreeViewItem item)
+		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
 			var path = item.Data as string;
 
@@ -67,20 +67,19 @@ namespace Yorozu.EditorTools
 					path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
 					findChild = root.transform.Find(path);
 					if (findChild == null)
-						return;
+						return false;
 				}
 
-				SelectionLog.SkipLog();
 				Selection.activeGameObject = findChild.gameObject;
-				return;
+				return true;
 			}
 
 			var find = GameObject.Find(path);
 			if (find == null)
-				return;
+				return false;
 
-			SelectionLog.SkipLog();
 			Selection.activeGameObject = find;
+			return true;
 		}
 	}
 }

@@ -40,7 +40,11 @@ namespace Yorozu.EditorTools
 			return item.depth >= 1;
 		}
 
-		internal override void DoubleClick(ToolTreeViewItem item) => OpenAsset(item);
+		internal override bool DoubleClick(ToolTreeViewItem item)
+		{
+			OpenAsset(item);
+			return false;
+		}
 
 		internal override void SingleClick(ToolTreeViewItem item) => SelectObject(item);
 

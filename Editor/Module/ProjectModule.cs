@@ -38,7 +38,11 @@ namespace Yorozu.EditorTools
             return list;
         }
 
-        internal override void DoubleClick(ToolTreeViewItem item) => OpenAsset(item);
+        internal override bool DoubleClick(ToolTreeViewItem item)
+        {
+            OpenAsset(item);
+            return true;
+        }
 
         internal override void SelectionChanged(TreeViewItem[] items) => SelectObject(items);
 

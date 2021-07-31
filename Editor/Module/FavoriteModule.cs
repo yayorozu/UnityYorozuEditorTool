@@ -33,7 +33,11 @@ namespace Yorozu.EditorTools
 
         internal override List<ToolTreeViewItem> GetItems() => GUIDsToGroup(FavoriteSave.Data.Select(d => d.GUID).ToArray());
 
-        internal override void DoubleClick(ToolTreeViewItem item) => OpenAsset(item);
+        internal override bool DoubleClick(ToolTreeViewItem item)
+        {
+            OpenAsset(item);
+            return false;
+        }
 
         internal override void SingleClick(ToolTreeViewItem item) => SelectObject(item);
 

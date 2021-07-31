@@ -53,7 +53,15 @@ namespace Yorozu.EditorTools
 
         protected override void DoubleClickedItem(int id)
         {
-            _editor.CurrentModule.DoubleClick(Find(id) as ToolTreeViewItem);
+            if (_editor.CurrentModule.DoubleClick(Find(id) as ToolTreeViewItem))
+            {
+                var first = GetRows().First();
+                // 選択を一番上に
+                if (first != null)
+                {
+                    SetSelection(new List<int> {first.id});
+                }
+            }
         }
 
         protected override void SelectionChanged(IList<int> selectedIds)
@@ -117,5 +125,4 @@ namespace Yorozu.EditorTools
             GUI.Label(rect, item.SubLabel, EditorStyles.miniLabel);
         }
     }
-
 }

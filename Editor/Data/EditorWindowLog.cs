@@ -44,11 +44,6 @@ namespace Yorozu.EditorTools
 			EditorApplication.update += Update;
 		}
 
-		internal static void SkipLog(int count = 1)
-		{
-			_skipCount += count;
-		}
-
 		private static void Update()
 		{
 			if (_count-- > 0)
