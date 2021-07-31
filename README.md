@@ -1,20 +1,31 @@
 # UnityYorozuEditorTool
 UnityEditor で利用できるツール
 
-<img src="https://github.com/yawaLib/ImageUploader/blob/master/YorozuTools/Top.png" width="500">
+<img src="https://github.com/yayorozu/ImageUploader/blob/master/YorozuTools/Top.png" width="500">
 
-* Projectのログ
+* アセットのお気に入り
+* アセットのログ
+* Hierarchyのお気に入り
 * Hierarchyのログ
 * ProjectWindowのログ
-* アセットのお気に入り登録
+
 * アセットを他のユーザを共通
 
 上記の機能がある
 
+## アセットのお気に入り
+
+アセットを右クリックしたり、この Window にドラッグすることでお気に入りに登録することができる
 
 ## Projectのログ
 
 Project Window で選択したログが記録される
+
+## Hierarchyのお気に入り
+
+Hierarchyのオブジェクトをドラッグしたりして追加することができる
+
+デバッグなどで確認したオブジェクトを登録しておくと便利
 
 ## Hierarchyのログ
 
@@ -32,7 +43,4 @@ PrefabMode で選択した場合にもログが残る
 
 Window がない場合は新しく開く
 
-## アセットのお気に入り登録
-
-アセットを右クリックしたり、この Window にドラッグすることでお気に入りに登録することができる
 
