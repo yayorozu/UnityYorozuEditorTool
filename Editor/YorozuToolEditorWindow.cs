@@ -158,7 +158,17 @@ namespace Yorozu.EditorTools
 
 					var paths = DragAndDrop.paths;
 					if (paths.Length > 0)
-						FavoriteAssetSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
+					{
+						var guids = paths.Select(AssetDatabase.AssetPathToGUID).ToArray();
+						if (CurrentModule.GetType() == typeof(ShareModule))
+						{
+							YorozuToolShareObject.Load().Add(guids);
+						}
+						else
+						{
+							FavoriteAssetSave.Add(guids);
+						}
+					}
 
 					var objects = DragAndDrop.objectReferences;
 					if (objects.Length > 0)
