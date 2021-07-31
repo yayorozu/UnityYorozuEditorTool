@@ -12,9 +12,8 @@ namespace Yorozu.EditorTools
 	[Serializable]
 	internal class FavoriteAssetModule : Module
 	{
-		internal override string Name => "Project Fav";
-		internal override Texture Texture =>
-			EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Favorite" : "Favorite");
+		internal override string Name => "Asset";
+		internal override Texture Texture => EditorResources.Load<Texture>("Favorite Icon");
 		internal override bool CanDrag => true;
 
 		internal override void Enter()

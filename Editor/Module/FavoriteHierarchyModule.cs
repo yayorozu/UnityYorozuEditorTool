@@ -11,8 +11,8 @@ namespace Yorozu.EditorTools
 	[Serializable]
 	internal class FavoriteHierarchyModule : Module
 	{
-		internal override string Name => "Hierarchy Fav";
-		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Favorite" : "Favorite");
+		internal override string Name => "Hierarchy";
+		internal override Texture Texture => EditorResources.Load<Texture>("Favorite Icon");
 		internal override bool CanDrag => false;
 
 		private Texture2D _iconScene;
