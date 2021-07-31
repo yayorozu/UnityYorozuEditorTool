@@ -61,6 +61,7 @@ namespace Yorozu.EditorTools
 			using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
 			{
 				_treeView.searchString = _searchField.OnToolbarGUI(_treeView.searchString);
+				CurrentModule.OnGUIToolBar();
 			}
 
 			var rect = GUILayoutUtility.GetRect(0, float.MaxValue, 0, float.MaxValue);
@@ -108,9 +109,7 @@ namespace Yorozu.EditorTools
 			if (_modules == null)
 				_modules = new Module[]
 				{
-					new FavoriteAssetModule(),
 					new AssetModule(),
-					new FavoriteHierarchyModule(),
 					new HierarchyModule(),
 					new WindowModule(),
 					new ShareModule()

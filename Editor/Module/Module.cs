@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -18,6 +19,12 @@ namespace Yorozu.EditorTools
 		internal abstract Texture Texture { get; }
 		internal abstract bool CanDrag { get; }
 
+		protected GUIContent[] _tabContents;
+		protected int _mode;
+
+		protected Texture FavIcon => EditorResources.Load<Texture>("Favorite Icon");
+		protected Texture LogIcon => EditorResources.Load<Texture>("Profiler.Instrumentation");
+
 		protected void Reload()
 		{
 			_window.Reload();
@@ -26,6 +33,30 @@ namespace Yorozu.EditorTools
 		internal abstract void Enter();
 		internal abstract void Exit();
 		internal abstract List<ToolTreeViewItem> GetItems();
+
+		/// <summary>
+		/// ツールバーの右側に機能を追加する場合
+		/// </summary>
+		internal virtual void OnGUIToolBar()
+		{
+			if (_tabContents == null)
+				return;
+
+			using (var check = new EditorGUI.ChangeCheckScope())
+			{
+				_mode = GUILayout.Toolbar(
+					_mode,
+					_tabContents,
+					new GUIStyle(EditorStyles.toolbarButton),
+					GUI.ToolbarButtonSize.Fixed,
+					GUILayout.Width(180f));
+
+				if (check.changed)
+				{
+					Reload();
+				}
+			}
+		}
 
 		internal virtual bool CanSearchDraw(ToolTreeViewItem item)
 		{
