@@ -43,7 +43,7 @@ namespace Yorozu.EditorTools
 			{
 				if (_labelWidth <= 0)
 				{
-					_labelWidth = Style.lineStyle.CalcSize(new GUIContent(displayName)).x + 5f;
+					_labelWidth = Style.lineStyle.CalcSize(new GUIContent(displayName)).x + 30f;
 				}
 
 				return _labelWidth;
