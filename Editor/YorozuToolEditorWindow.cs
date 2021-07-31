@@ -28,6 +28,7 @@ namespace Yorozu.EditorTools
         private int _moduleIndex;
         private GUIContent[] _tabContents;
         private bool _validShare;
+        internal bool ValidShare => _validShare;
 
         private void OnEnable()
         {
@@ -49,10 +50,11 @@ namespace Yorozu.EditorTools
             {
                 _modules = new Module[]
                 {
-                    new ProjectModule(),
+                    new FavoriteAssetModule(),
+                    new AssetModule(),
+                    new FavoriteHierarchyModule(),
                     new HierarchyModule(),
                     new WindowModule(),
-                    new FavoriteModule(),
                     new ShareModule(),
                 };
             }
@@ -146,7 +148,7 @@ namespace Yorozu.EditorTools
                 if (@event.type == EventType.DragPerform)
                 {
                     DragAndDrop.activeControlID = 0;
-                    FavoriteSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
+                    FavoriteAssetSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
                     DragAndDrop.AcceptDrag();
                 }
                 else
@@ -173,14 +175,14 @@ namespace Yorozu.EditorTools
             menu.AddSeparator("");
             menu.AddItem(new GUIContent("Remove Invalid Favorite Asset"), false, () =>
             {
-                FavoriteSave.RemoveInactive();
+                FavoriteAssetSave.RemoveInactive();
             });
 
             menu.AddItem(new GUIContent("Remove All Favorite Asset"), false, () =>
             {
                 if (EditorUtility.DisplayDialog("Info", "Clean All Favorite Asset?", "OK", "Cancel"))
                 {
-                    FavoriteSave.Clear();
+                    FavoriteAssetSave.Clear();
                 }
             });
         }

@@ -19,9 +19,9 @@ namespace Yorozu.EditorTools
     }
 
     /// <summary>
-    /// お気に入りのデータをPrefabに保存
+    /// お気に入りのAssetデータをPrefabに保存
     /// </summary>
-    internal static class FavoriteSave
+    internal static class FavoriteAssetSave
     {
         [MenuItem("Assets/Yorozu/AddFavorite")]
         private static void AddFavorite()
@@ -41,17 +41,12 @@ namespace Yorozu.EditorTools
         }
 
         private static readonly string _key = Application.productName + "YorozuTool";
-
         private static SaveData _saveData;
 
         internal static event Action UpdateEvent;
-
-        /// <summary>
-        /// GUID の対象が存在しないのは省く
-        /// </summary>
         internal static IEnumerable<FavoriteData> Data => _saveData.Data;
 
-        static FavoriteSave()
+        static FavoriteAssetSave()
         {
             var json = EditorPrefs.GetString(_key);
             _saveData = string.IsNullOrEmpty(json) ?

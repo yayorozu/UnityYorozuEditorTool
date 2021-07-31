@@ -9,9 +9,9 @@ using UnityEngine;
 namespace Yorozu.EditorTools
 {
     [Serializable]
-    internal class ProjectModule : Module
+    internal class AssetModule : Module
     {
-        internal override string Name => "ProjectLog";
+        internal override string Name => "AssetLog";
         internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Project" : "Project");
         internal override bool CanDrag => true;
 
@@ -50,14 +50,17 @@ namespace Yorozu.EditorTools
         {
             menu.AddItem(new GUIContent("Add Favorite"), false, () =>
             {
-                FavoriteSave.Add(item.GetGUID());
+                FavoriteAssetSave.Add(item.GetGUID());
             });
 
-            menu.AddItem(new GUIContent("Add Share"), false, () =>
+            if (_window.ValidShare)
             {
-                var data = YorozuToolShareObject.Load();
-                data.Add(item.GetGUID());
-            });
+                menu.AddItem(new GUIContent("Add Share"), false, () =>
+                {
+                    var data = YorozuToolShareObject.Load();
+                    data.Add(item.GetGUID());
+                });
+            }
         }
 
         internal override IEnumerable<UnityEngine.Object> GetDragObjects(IList<int> itemIds)

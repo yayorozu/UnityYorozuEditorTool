@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace Yorozu.EditorTools
 {
 	[Serializable]
-	internal class HierarchyModule : Module
+	internal class FavoriteHierarchyModule : Module
 	{
-		internal override string Name => "HierarchyLog";
-		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_UnityEditor.SceneHierarchyWindow" : "UnityEditor.SceneHierarchyWindow");
+		internal override string Name => "Hierarchy Fav";
+		internal override Texture Texture => EditorResources.Load<Texture>(EditorGUIUtility.isProSkin ? "d_Favorite" : "Favorite");
 		internal override bool CanDrag => false;
 
 		private Texture2D _iconScene;
@@ -20,20 +21,20 @@ namespace Yorozu.EditorTools
 
 		internal override void Enter()
 		{
-			SelectionLog.UpdateHierarchyLog += Reload;
 			_iconScene = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab On Icon" : "Prefab On Icon");
 			_iconPrefab = EditorResources.Load<Texture2D>(EditorGUIUtility.isProSkin ? "d_Prefab Icon" : "Prefab Icon");
+			FavoriteHierarchySave.UpdateEvent += Reload;
 		}
 
 		internal override void Exit()
 		{
-			SelectionLog.UpdateHierarchyLog -= Reload;
+			FavoriteHierarchySave.UpdateEvent -= Reload;
 		}
 
 		internal override List<ToolTreeViewItem> GetItems()
 		{
 			var list = new List<ToolTreeViewItem>();
-			foreach (var pair in SelectionLog.HierarchyLogs.Select((i, index) => new{i, index}))
+			foreach (var pair in FavoriteHierarchySave.Data.Select((i, index) => new{i, index}))
 			{
 				var item = pair.i.ToItem(pair.index);
 				item.icon = pair.i.InPrefabEditor ? _iconPrefab : _iconScene;
@@ -51,10 +52,15 @@ namespace Yorozu.EditorTools
 
 		internal override void GenerateMenu(TreeViewItem item, ref GenericMenu menu)
 		{
-			menu.AddItem(new GUIContent("Add Favorite"), false, () =>
+			menu.AddItem(new GUIContent("Remove"), false, () =>
 			{
 				var target = SelectionLog.HierarchyLogs.Skip(item.id).First();
-				FavoriteHierarchySave.Add(target);
+				FavoriteHierarchySave.Remove(target);
+			});
+
+			menu.AddItem(new GUIContent("Remove All"), false, () =>
+			{
+				FavoriteHierarchySave.Clear();
 			});
 		}
 	}

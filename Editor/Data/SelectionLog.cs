@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
@@ -23,12 +22,25 @@ namespace Yorozu.EditorTools
         public override bool Equals(object obj)
         {
             var data =  obj as HierarchyData;
-            return data.SceneName == SceneName && data.Path == Path;
+            return data.SceneName == SceneName && data.Path == Path && data.Name == Name;
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return SceneName.GetHashCode() ^ Path.GetHashCode() ^ Name.GetHashCode();
+        }
+
+        internal ToolTreeViewItem ToItem(int index)
+        {
+            var item = new ToolTreeViewItem(index, 0, Name)
+            {
+                SubLabel = string.IsNullOrEmpty(Name) ?
+                    $"{Path}" :
+                    $"【{SceneName}】{Path}",
+                Data = Path + "/" + Name,
+            };
+
+            return item;
         }
     }
 
@@ -44,6 +56,7 @@ namespace Yorozu.EditorTools
         internal static IEnumerable<string> ProjectLogs => ProjectLogData.instance.Logs;
 
         internal static void AddProjectLog(string guid) => ProjectLogData.instance.AddLog(guid);
+        private static int _skipCount;
 
         internal static UpdateHierarchy UpdateHierarchyLog
         {
@@ -54,6 +67,11 @@ namespace Yorozu.EditorTools
         {
             get => ProjectLogData.instance.UpdateLog;
             set => ProjectLogData.instance.UpdateLog = value;
+        }
+
+        static SelectionLog()
+        {
+            Selection.selectionChanged += SelectionChanged;
         }
 
         private class HierarchyLogData : ScriptableSingleton<HierarchyLogData>
@@ -96,13 +114,6 @@ namespace Yorozu.EditorTools
                 UpdateLog?.Invoke();
             }
         }
-
-        static SelectionLog()
-        {
-            Selection.selectionChanged += SelectionChanged;
-        }
-
-        private static int _skipCount;
 
         internal static void SkipLog(int count = 1)
         {

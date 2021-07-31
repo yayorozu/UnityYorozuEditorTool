@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -104,8 +105,8 @@ namespace Yorozu.EditorTools
 			if (asset == null)
 				return null;
 
-			var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
-			var directory = System.IO.Path.GetDirectoryName(path).Replace("Assets/", "");
+			var fileName = Path.GetFileNameWithoutExtension(path);
+			var directory = Path.GetDirectoryName(path)?.Replace("Assets/", "");
 			var item = new ToolTreeViewItem
 			{
 				id = asset.GetInstanceID(),
@@ -145,6 +146,39 @@ namespace Yorozu.EditorTools
 				.Where(i => i.Data is string)
 				.Select(i => EditorUtility.InstanceIDToObject(i.id))
 				.ToArray();
+		}
+
+		/// <summary>
+		/// Path から Hierarchy Object を選択
+		/// </summary>
+		protected bool SelectHierarchyObject(string path)
+		{
+			// PrefabModeだと処理が違う
+			var stage = PrefabStageUtility.GetCurrentPrefabStage();
+			if (stage != null)
+			{
+				var root = stage.prefabContentsRoot;
+				path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+				var findChild = root.transform.Find(path);
+				// Editing Environment が設定されていた場合パスがずれるので再度取得
+				if (findChild == null)
+				{
+					path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+					findChild = root.transform.Find(path);
+					if (findChild == null)
+						return false;
+				}
+
+				Selection.activeGameObject = findChild.gameObject;
+				return true;
+			}
+
+			var find = GameObject.Find(path);
+			if (find == null)
+				return false;
+
+			Selection.activeGameObject = find;
+			return true;
 		}
 	}
 }
