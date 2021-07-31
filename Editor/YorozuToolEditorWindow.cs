@@ -152,13 +152,16 @@ namespace Yorozu.EditorTools
                     {
                         FavoriteAssetSave.Add(paths.Select(AssetDatabase.AssetPathToGUID).ToArray());
                     }
+
                     var objects = DragAndDrop.objectReferences;
                     if (objects.Length > 0)
                     {
-                        var data = objects.Cast<GameObject>()
+                        var data = objects.Select(o => o as GameObject)
+                            .Where(g => g != null)
                             .Select(g => g.transform)
                             .Select(HierarchyData.Convert)
                             .ToArray();
+                        
                         FavoriteHierarchySave.Add(data);
                     }
                     DragAndDrop.AcceptDrag();
