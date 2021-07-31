@@ -34,8 +34,7 @@ namespace Yorozu.EditorTools
 	{
 		private static EditorWindow _currentWindow;
 		private static int _count;
-		private static int _skipCount;
-
+		
 		static EditorWindowLog()
 		{
 			EditorApplication.update += Update;
@@ -59,10 +58,7 @@ namespace Yorozu.EditorTools
 				_currentWindow = EditorWindow.focusedWindow;
 				if (_currentWindow != null && _currentWindow.GetType() != typeof(YorozuToolEditorWindow))
 				{
-					if (_skipCount > 0)
-						_skipCount--;
-					else
-						EditorWindowLogData.instance.AddLog(new WindowData(_currentWindow));
+					EditorWindowLogData.instance.AddLog(new WindowData(_currentWindow));
 				}
 			}
 
