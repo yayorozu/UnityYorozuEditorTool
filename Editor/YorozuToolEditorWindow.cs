@@ -78,13 +78,21 @@ namespace Yorozu.EditorTools
 				_tabContents = null;
 			});
 			menu.AddSeparator("");
-			menu.AddItem(new GUIContent("Remove Invalid Favorite Asset"), false,
-				() => { FavoriteAssetSave.RemoveInactive(); });
+			menu.AddItem(new GUIContent("Remove Invalid Favorite Asset"), false, () =>
+			{
+				FavoriteAssetSave.RemoveInactive();
+			});
 
 			menu.AddItem(new GUIContent("Remove All Favorite Asset"), false, () =>
 			{
 				if (EditorUtility.DisplayDialog("Info", "Clean All Favorite Asset?", "OK", "Cancel"))
 					FavoriteAssetSave.Clear();
+			});
+
+			menu.AddItem(new GUIContent("Remove All Favorite Hierarchy GameObjects"), false, () =>
+			{
+				if (EditorUtility.DisplayDialog("Info", "Clean All Favorite Hierarchy GameObjects?", "OK", "Cancel"))
+					FavoriteHierarchySave.Clear();
 			});
 		}
 
