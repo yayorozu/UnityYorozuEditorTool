@@ -52,20 +52,20 @@ namespace Yorozu.EditorTools
 		{
 			menu.AddItem(new GUIContent("Remove"), false, () =>
 			{
+				if (item.depth == 2)
+					return;
+
 				if (item.depth == 0)
 				{
 					var childGUIDs = item.children
-						.Select(c => EditorUtility.InstanceIDToObject(c.id))
-						.Select(AssetDatabase.GetAssetPath)
-						.Select(AssetDatabase.AssetPathToGUID)
+						.Select(c => c.GetGUID())
 						.ToArray();
 
 					_data.Remove(childGUIDs);
 					return;
 				}
 
-				var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
-				_data.Remove(AssetDatabase.AssetPathToGUID(path));
+				_data.Remove(item.GetGUID());
 				Reload();
 			});
 		}

@@ -38,6 +38,7 @@ namespace Yorozu.EditorTools
         }
 
         private TreeViewItem Find(int id) => GetRows().First(i => i.id == id);
+
         protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
         {
             if (!_editor.CurrentModule.CanSearchDraw(item as ToolTreeViewItem))
@@ -71,6 +72,8 @@ namespace Yorozu.EditorTools
 
             _editor.CurrentModule.SelectionChanged(selectedIds.Select(Find).ToArray());
         }
+
+        protected override bool CanMultiSelect(TreeViewItem item) => false;
 
         protected override bool CanStartDrag(CanStartDragArgs args)
         {

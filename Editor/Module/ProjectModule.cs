@@ -50,15 +50,13 @@ namespace Yorozu.EditorTools
         {
             menu.AddItem(new GUIContent("Add Favorite"), false, () =>
             {
-                var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
-                FavoriteSave.Add(AssetDatabase.AssetPathToGUID(path));
+                FavoriteSave.Add(item.GetGUID());
             });
 
             menu.AddItem(new GUIContent("Add Share"), false, () =>
             {
                 var data = YorozuToolShareObject.Load();
-                var path = AssetDatabase.GetAssetPath(EditorUtility.InstanceIDToObject(item.id));
-                data.Add(AssetDatabase.AssetPathToGUID(path));
+                data.Add(item.GetGUID());
             });
         }
 
