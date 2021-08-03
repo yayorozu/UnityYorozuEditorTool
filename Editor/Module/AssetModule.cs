@@ -63,7 +63,7 @@ namespace Yorozu.EditorTools
 		{
 			OpenAsset(item);
 
-			return true;
+			return !_favMode;
 		}
 
 		internal override void SelectionChanged(TreeViewItem[] items)
