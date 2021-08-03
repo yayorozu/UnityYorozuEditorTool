@@ -61,7 +61,7 @@ namespace Yorozu.EditorTools
 
 		internal override bool DoubleClick(ToolTreeViewItem item)
 		{
-			OpenAsset(item, _favMode);
+			OpenAsset(item);
 
 			return true;
 		}
