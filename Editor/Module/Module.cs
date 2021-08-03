@@ -133,6 +133,7 @@ namespace Yorozu.EditorTools
 					icon = (Texture2D) AssetDatabase.GetCachedIcon(g.First()),
 					Data = g.Key
 				};
+				var child = new List<ToolTreeViewItem>(g.Count());
 				foreach (var path in g)
 				{
 					var guid = AssetDatabase.AssetPathToGUID(path);
@@ -149,8 +150,13 @@ namespace Yorozu.EditorTools
 									item.AddChild(childItem);
 							}
 
-						root.AddChild(item);
+						child.Add(item);
 					}
+				}
+				// ソートする
+				foreach (var item in child.OrderBy(c => c.displayName))
+				{
+					root.AddChild(item);
 				}
 
 				if (root.hasChildren)
