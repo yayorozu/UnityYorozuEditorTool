@@ -36,7 +36,6 @@ namespace Yorozu.EditorTools
 		private void OnGUI()
 		{
 			Init();
-			CheckDrop();
 
 			using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
 			{
@@ -148,56 +147,6 @@ namespace Yorozu.EditorTools
 		internal void CollapseAll()
 		{
 			_treeView.CollapseAll();
-		}
-
-		private void CheckDrop()
-		{
-			var @event = Event.current;
-			if (@event.type == EventType.DragUpdated || @event.type == EventType.DragPerform)
-			{
-				if (mouseOverWindow != this)
-					return;
-
-				DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-				if (@event.type == EventType.DragPerform)
-				{
-					DragAndDrop.activeControlID = 0;
-
-					var paths = DragAndDrop.paths;
-					if (paths.Length > 0)
-					{
-						var guids = paths.Select(AssetDatabase.AssetPathToGUID).ToArray();
-						if (CurrentModule.GetType() == typeof(ShareModule))
-						{
-							YorozuToolShareObject.Load().Add(guids);
-						}
-						else
-						{
-							FavoriteAssetSave.Add(guids);
-						}
-					}
-
-					var objects = DragAndDrop.objectReferences;
-					if (objects.Length > 0)
-					{
-						var data = objects.Select(o => o as GameObject)
-							.Where(g => g != null)
-							.Select(g => g.transform)
-							.Select(HierarchyData.Convert)
-							.ToArray();
-
-						FavoriteHierarchySave.Add(data);
-					}
-
-					DragAndDrop.AcceptDrag();
-				}
-				else
-				{
-					DragAndDrop.activeControlID = GUIUtility.GetControlID(FocusType.Passive);
-				}
-
-				@event.Use();
-			}
 		}
 	}
 }

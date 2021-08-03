@@ -1,14 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Yorozu.EditorTools
 {
 	internal class ToolTreeView : TreeView
 	{
 		private readonly YorozuToolEditorWindow _editor;
+
+		/// <summary>
+		/// Editor 内で Drag してるか
+		/// TreeViewにもあるけど判定が切り替わるタイミングがお好みではない
+		/// </summary>
+		private bool _isDragging;
 
 		public ToolTreeView(TreeViewState state, YorozuToolEditorWindow editor) : base(state)
 		{
@@ -75,15 +83,18 @@ namespace Yorozu.EditorTools
 			_editor.CurrentModule.SelectionChanged(selectedIds.Select(Find).ToArray());
 		}
 
-		protected override bool CanMultiSelect(TreeViewItem item)
+		protected override void RenameEnded(RenameEndedArgs args)
 		{
-			return false;
+			args.acceptedRename = _editor.CurrentModule.RenameEnded(args.itemID, args.originalName, args.newName);
 		}
 
-		protected override bool CanStartDrag(CanStartDragArgs args)
-		{
-			return _editor.CurrentModule.CanDrag;
-		}
+		protected override bool CanRename(TreeViewItem item) => _editor.CurrentModule.CanRename(item);
+
+		protected override bool CanBeParent(TreeViewItem item) => _editor.CurrentModule.CanBeParent(item);
+
+		protected override bool CanMultiSelect(TreeViewItem item) => false;
+
+		protected override bool CanStartDrag(CanStartDragArgs args) => _editor.CurrentModule.CanDrag;
 
 		protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
 		{
@@ -101,6 +112,56 @@ namespace Yorozu.EditorTools
 			DragAndDrop.objectReferences = dragObjects.ToArray();
 			DragAndDrop.SetGenericData("Tool", new List<int>(args.draggedItemIDs));
 			DragAndDrop.StartDrag(dragObjects.Count > 1 ? "<Multiple>" : dragObjects[0].name);
+			_isDragging = true;
+		}
+
+		protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
+		{
+			// ドラッグ終了
+			if (args.performDrop)
+			{
+				// EditorWindow外であれば
+				if (!_isDragging)
+				{
+					AcceptDragItem();
+					return DragAndDropVisualMode.Generic;
+				}
+
+				switch (args.dragAndDropPosition)
+				{
+					case DragAndDropPosition.UponItem:
+						var item = args.parentItem as ToolTreeViewItem;
+						// 親となれるか
+						if (item != null && args.parentItem.depth == 0 && item.CanChangeName)
+						{
+							var draggedObjects = DragAndDrop.objectReferences;
+							if (draggedObjects.Length > 0)
+							{
+								var guid = draggedObjects[0].GetGUID();
+								FavoriteAssetSave.Remove(guid);
+								FavoriteAssetSave.AddCategoryChild(item.displayName, guid);
+								SetSelection(new List<int> {draggedObjects[0].GetInstanceID()});
+							}
+						}
+
+						break;
+
+					case DragAndDropPosition.BetweenItems:
+					case DragAndDropPosition.OutsideItems:
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				Reload();
+				_isDragging = false;
+			}
+			// Editor 外のオブジェクトをドラッグしてる場合
+			else if (!_isDragging && (DragAndDrop.paths.Length > 0 || DragAndDrop.objectReferences.Length > 0))
+			{
+				return DragAndDropVisualMode.Copy;
+			}
+
+			return DragAndDropVisualMode.Move;
 		}
 
 		protected override void ContextClickedItem(int id)
@@ -110,6 +171,18 @@ namespace Yorozu.EditorTools
 
 			var menu = new GenericMenu();
 			_editor.CurrentModule.GenerateMenu(Find(id), ref menu);
+
+			// 各所で追加
+			menu.ShowAsContext();
+		}
+
+		protected override void ContextClicked()
+		{
+			var @event = Event.current;
+			@event.Use();
+
+			var menu = new GenericMenu();
+			_editor.CurrentModule.GenerateMenu(ref menu);
 
 			// 各所で追加
 			menu.ShowAsContext();
@@ -135,6 +208,34 @@ namespace Yorozu.EditorTools
 			rect.width = Mathf.Min(rest, item.SubLabelWidth);
 			rect.x = rect.x + args.rowRect.width - rect.width;
 			GUI.Label(rect, item.SubLabel, EditorStyles.miniLabel);
+		}
+
+		/// <summary>
+		/// Editor 外からのドラッグの受け入れ
+		/// </summary>
+		private void AcceptDragItem()
+		{
+			var paths = DragAndDrop.paths;
+			if (paths.Length > 0)
+			{
+				var guids = paths.Select(AssetDatabase.AssetPathToGUID).ToArray();
+				if (_editor.CurrentModule.GetType() == typeof(ShareModule))
+					YorozuToolShareObject.Load().Add(guids);
+				else
+					FavoriteAssetSave.Add(true, guids);
+			}
+
+			var objects = DragAndDrop.objectReferences;
+			if (objects.Length > 0)
+			{
+				var data = objects.Select(o => o as GameObject)
+					.Where(g => g != null)
+					.Select(g => g.transform)
+					.Select(HierarchyData.Convert)
+					.ToArray();
+
+				FavoriteHierarchySave.Add(data);
+			}
 		}
 	}
 }

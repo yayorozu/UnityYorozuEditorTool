@@ -80,6 +80,28 @@ namespace Yorozu.EditorTools
 		{
 		}
 
+		/// <summary>
+		/// アイテム外で右クリック
+		/// </summary>
+		internal virtual void GenerateMenu(ref GenericMenu menu)
+		{
+		}
+
+		internal virtual bool CanBeParent(TreeViewItem item)
+		{
+			return false;
+		}
+
+		internal virtual bool CanRename(TreeViewItem item)
+		{
+			return false;
+		}
+
+		internal virtual bool RenameEnded(int itemId, string prev, string current)
+		{
+			return false;
+		}
+
 		internal virtual IEnumerable<Object> GetDragObjects(IList<int> itemIds)
 		{
 			return new Object[0];

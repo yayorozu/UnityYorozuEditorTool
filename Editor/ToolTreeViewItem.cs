@@ -13,6 +13,10 @@ namespace Yorozu.EditorTools
 		/// </summary>
 		internal object Data;
 		internal string SubLabel;
+		/// <summary>
+		/// 名前変更できるか
+		/// </summary>
+		internal bool CanChangeName;
 
 		internal ToolTreeViewItem()
 		{
