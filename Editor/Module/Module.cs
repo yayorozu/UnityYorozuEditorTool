@@ -165,7 +165,7 @@ namespace Yorozu.EditorTools
 			return item;
 		}
 
-		protected void OpenAsset(ToolTreeViewItem item)
+		protected void OpenAsset(ToolTreeViewItem item, bool isSkip = false)
 		{
 			if (!(item.Data is string))
 				return;
@@ -173,12 +173,16 @@ namespace Yorozu.EditorTools
 			var path = item.Data as string;
 			var guid = AssetDatabase.AssetPathToGUID(path);
 
+			if (isSkip)
+				SelectionLog.SkipLog();
+			
 			// クリックしたやつはログの上に上げる
 			SelectionLog.AddProjectLog(guid);
 			if (AssetDatabase.IsValidFolder(path))
 				EditorUtility.RevealInFinder(path);
 			else
 				AssetDatabase.OpenAsset(EditorUtility.InstanceIDToObject(item.id));
+		
 		}
 
 		protected void SelectObject(params TreeViewItem[] items)
