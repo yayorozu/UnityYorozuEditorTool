@@ -70,7 +70,7 @@ namespace Yorozu.EditorTools
 			{
 				menu.AddItem(new GUIContent("Remove"), false, () =>
 				{
-					var target = SelectionLog.HierarchyLogs.Skip(item.id).First();
+					var target = FavoriteHierarchySave.Data.ElementAt(item.id);
 					FavoriteHierarchySave.Remove(target);
 				});
 
@@ -79,7 +79,7 @@ namespace Yorozu.EditorTools
 			}
 			menu.AddItem(new GUIContent("Add Favorite"), false, () =>
 			{
-				var target = SelectionLog.HierarchyLogs.Skip(item.id).First();
+				var target = SelectionLog.HierarchyLogs.ElementAt(item.id);
 				FavoriteHierarchySave.Add(target);
 			});
 		}
