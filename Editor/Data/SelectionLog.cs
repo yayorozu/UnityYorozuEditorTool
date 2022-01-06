@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	internal delegate void UpdateProject();
 

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	public class YorozuToolEditorWindow : EditorWindow, IHasCustomMenu
 	{

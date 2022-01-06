@@ -6,7 +6,7 @@ using UnityEditor.Experimental;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	[Serializable]
 	internal class HierarchyModule : Module

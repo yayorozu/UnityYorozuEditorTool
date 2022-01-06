@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Experimental;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	internal class WindowModule : Module
 	{

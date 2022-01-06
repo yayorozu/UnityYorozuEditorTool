@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	internal class ToolTreeViewItem : TreeViewItem
 	{

@@ -5,7 +5,7 @@ using UnityEditor.Experimental;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	internal class ShareModule : Module
 	{

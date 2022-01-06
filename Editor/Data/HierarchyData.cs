@@ -3,7 +3,7 @@ using System.Text;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
-namespace Yorozu.EditorTools
+namespace Yorozu.EditorTool
 {
 	[Serializable]
 	internal class HierarchyData
