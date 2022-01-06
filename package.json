@@ -1,0 +1,16 @@
+{
+  "name": "yorozu.editor-tool",
+  "version": "1.0.0",
+  "displayName": "Yorozu Editor Tool",
+  "description": "アセットのお気に入りやヒエラルキーのログなど便利なツール",
+  "unity": "2020.3",
+  "keywords": [
+    "EditorTool",
+    "Yorozu"
+  ],
+  "author": {
+    "name": "Yorozu",
+    "email": "hatch.tech.eng@gmail.com",
+    "url": "https://github.com/yayorozu"
+  }
+}
