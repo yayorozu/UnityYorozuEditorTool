@@ -22,11 +22,14 @@ namespace Yorozu.EditorTools
 		protected GUIContent[] _tabContents;
 		protected int _mode;
 
-		protected Texture FavIcon => EditorResources.Load<Texture>("Favorite Icon");
+		protected Texture FavIcon => EditorResources.Load<Texture>("d_Favorite Icon");
 		protected Texture LogIcon => EditorResources.Load<Texture>("Profiler.Instrumentation");
 
 		protected void Reload()
 		{
+			if (_window == null)
+				return;
+			
 			_window.Reload();
 		}
 
