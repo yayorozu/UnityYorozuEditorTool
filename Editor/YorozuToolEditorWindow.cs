@@ -19,10 +19,12 @@ namespace Yorozu.EditorTools
 		internal Module CurrentModule => _modules[_moduleIndex];
 		internal bool ValidShare { get; private set; }
 
+		private static readonly string ShareKay = "YorozuTool.ValidShare";
+
 		private void OnEnable()
 		{
 			Window = this;
-			ValidShare = EditorPrefs.GetBool("YorozuTool.ValidShare", false);
+			ValidShare = EditorPrefs.GetBool(ShareKay, false);
 			Init();
 			CurrentModule.Enter();
 		}
@@ -72,7 +74,7 @@ namespace Yorozu.EditorTools
 			menu.AddItem(new GUIContent("Asset Share Enable"), ValidShare, () =>
 			{
 				ValidShare = !ValidShare;
-				EditorPrefs.SetBool("YorozuTool.ValidShare", ValidShare);
+				EditorPrefs.SetBool(ShareKay, ValidShare);
 				if (_moduleIndex >= _modules.Length - 1)
 					_moduleIndex = 0;
 				_tabContents = null;
