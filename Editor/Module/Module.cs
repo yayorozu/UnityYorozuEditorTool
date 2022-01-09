@@ -4,10 +4,15 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using Object = UnityEngine.Object;
+
+#if UNITY_2021_1_OR_NEWER
+using UnityEditor.SceneManagement;
+#else
+using UnityEditor.Experimental.SceneManagement;
+#endif
 
 namespace Yorozu.EditorTool
 {
