@@ -26,10 +26,6 @@ namespace Yorozu.EditorTool
 			Reload();
 		}
 
-		public ToolTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader) : base(state, multiColumnHeader)
-		{
-		}
-
 		protected override TreeViewItem BuildRoot()
 		{
 			var root = new TreeViewItem(0, -1);

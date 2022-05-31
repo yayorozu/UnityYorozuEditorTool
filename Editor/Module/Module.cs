@@ -123,9 +123,21 @@ namespace Yorozu.EditorTool
 				.GroupBy(path =>
 				{
 					// ディレクトリとDefaultAsset を区別するため
-					return AssetDatabase.IsValidFolder(path)
-						? typeof(Directory)
-						: AssetDatabase.GetMainAssetTypeAtPath(path);
+					if (AssetDatabase.IsValidFolder(path))
+					{
+						return typeof(Directory);
+					}
+					// ScriptableObject
+					if (path.EndsWith(".asset"))
+					{
+						var iconName = AssetDatabase.GetCachedIcon(path);
+						if (iconName.name.EndsWith("ScriptableObject Icon"))
+						{
+							return typeof(ScriptableObject);
+						}
+					}
+					
+					return AssetDatabase.GetMainAssetTypeAtPath(path);
 				})
 				.Where(pair => pair.Key != null)
 				.OrderBy(g => g.Key.Name);
@@ -141,30 +153,40 @@ namespace Yorozu.EditorTool
 					icon = (Texture2D) AssetDatabase.GetCachedIcon(g.First()),
 					Data = g.Key
 				};
-				var child = new List<ToolTreeViewItem>(g.Count());
-				foreach (var path in g)
+				
+				// ScriptableObjectは作りが別
+				if (g.Key == typeof(ScriptableObject))
 				{
-					var guid = AssetDatabase.AssetPathToGUID(path);
-					var item = GUIDToItem(guid);
-					if (item != null)
+					var sgroup = g.GroupBy(AssetDatabase.GetMainAssetTypeAtPath);
+					foreach (var pair in sgroup)
 					{
-						// フォルダだったら子供を取得する
-						if (AssetDatabase.IsValidFolder(path))
-							foreach (var file in Directory.GetFiles(path))
+						var child1 = new ToolTreeViewItem
+						{
+							depth = 1,
+							displayName = pair.Key.Name,
+							icon = (Texture2D) AssetDatabase.GetCachedIcon(g.First()),
+						};
+						
+						CreateChild(child1, pair, g.Key);
+						if (child1.hasChildren)
+						{
+							var validPath = pair.FirstOrDefault(p => !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(p)));
+							if (!string.IsNullOrEmpty(validPath))
 							{
-								var childGuid = AssetDatabase.AssetPathToGUID(file);
-								var childItem = GUIDToItem(childGuid);
-								if (childItem != null)
-									item.AddChild(childItem);
+								var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(validPath);
+								var editor = Editor.CreateEditor(asset);
+								var script = editor.serializedObject.FindProperty("m_Script");
+								child1.id = script.objectReferenceValue.GetInstanceID();
+								child1.Data = AssetDatabase.GetAssetPath(script.objectReferenceValue);
 							}
 
-						child.Add(item);
+							root.AddChild(child1);
+						}
 					}
 				}
-				// ソートする
-				foreach (var item in child.OrderBy(c => c.displayName))
+				else
 				{
-					root.AddChild(item);
+					CreateChild(root, g, g.Key);
 				}
 
 				if (root.hasChildren)
@@ -172,6 +194,39 @@ namespace Yorozu.EditorTool
 			}
 
 			return list;
+		}
+
+		private ToolTreeViewItem CreateChild(ToolTreeViewItem parent, IEnumerable<string> paths, Type type)
+		{
+			var child = new List<ToolTreeViewItem>(paths.Count());
+			foreach (var path in paths)
+			{
+				var guid = AssetDatabase.AssetPathToGUID(path);
+				var item = GUIDToItem(guid);
+				if (item == null) 
+					continue;
+						
+				// フォルダだったら子供を取得する
+				if (type == typeof(Directory))
+				{
+					foreach (var file in Directory.GetFiles(path))
+					{
+						var childGuid = AssetDatabase.AssetPathToGUID(file);
+						var childItem = GUIDToItem(childGuid);
+						if (childItem != null)
+							item.AddChild(childItem);
+					}
+				}
+				child.Add(item);
+			}
+			
+			// ソートする
+			foreach (var item in child.OrderBy(c => c.displayName))
+			{
+				parent.AddChild(item);
+			}
+
+			return parent;
 		}
 
 		protected ToolTreeViewItem GUIDToItem(string guid)
